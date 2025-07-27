@@ -1,6 +1,5 @@
 //
 //  PomodoroTimerTests.swift
-//  Pomodoro Timer Tests
 //
 //  Created by Alexey Tsymlov on 27.07.2025.
 //

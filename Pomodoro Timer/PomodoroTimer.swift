@@ -1,6 +1,5 @@
 //
 //  PomodoroTimer.swift
-//  Pomodoro Timer
 //
 //  Created by Alexey Tsymlov on 27.07.2025.
 //
