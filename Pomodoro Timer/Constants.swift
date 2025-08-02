@@ -7,7 +7,7 @@
 
 import Foundation
 
-private enum Constants {
+enum Constants {
     static let pomodoroDuration: TimeInterval = 25 * 60 // 25 minutes
     static let shortBreakDuration: TimeInterval = 5 * 60 // 5 minutes
     static let longBreakDuration: TimeInterval = 15 * 60 // 15 minutes
