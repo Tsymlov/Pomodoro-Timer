@@ -8,12 +8,21 @@
 import Foundation
 
 struct SessionRecord: Equatable, Codable, Identifiable {
-    let id = UUID()
+    let id: UUID
     let sessionType: SessionType
     let startTime: Date
     let endTime: Date
     let duration: TimeInterval
     let wasCompleted: Bool
+
+    init(sessionType: SessionType, startTime: Date, endTime: Date, duration: TimeInterval, wasCompleted: Bool) {
+        self.id = UUID()
+        self.sessionType = sessionType
+        self.startTime = startTime
+        self.endTime = endTime
+        self.duration = duration
+        self.wasCompleted = wasCompleted
+    }
 
     var day: Date {
         Calendar.current.startOfDay(for: startTime)

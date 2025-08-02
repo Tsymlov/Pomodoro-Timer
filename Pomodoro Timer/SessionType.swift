@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum SessionType: CaseIterable, Equatable {
+enum SessionType: CaseIterable, Equatable, Codable {
     case pomodoro
     case shortBreak
     case longBreak
