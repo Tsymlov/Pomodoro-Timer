@@ -12,13 +12,6 @@ private enum Constants {
     static let pomodoroDuration: CGFloat = 1500 // secs. It is 25 mins.
 }
 
-// MARK: - Timer Protocol
-protocol TimerProtocol {
-    var publisher: AnyPublisher<Date, Never> { get }
-    func start()
-    func stop()
-}
-
 // MARK: - Real Timer Implementation
 final class SystemTimer: TimerProtocol {
     private var timer: Timer?
