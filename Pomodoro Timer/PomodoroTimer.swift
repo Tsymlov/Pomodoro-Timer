@@ -13,31 +13,6 @@ private enum Constants {
     static let timeInterval: TimeInterval = 1 //secs
 }
 
-// MARK: - Real Timer Implementation
-final class SystemTimer: TimerProtocol {
-    private var timer: Timer?
-    private let interval: TimeInterval
-
-    var publisher: AnyPublisher<Date, Never> {
-        Timer.publish(every: interval, on: .main, in: .common)
-            .autoconnect()
-            .eraseToAnyPublisher()
-    }
-
-    init(interval: TimeInterval = Constants.timeInterval) {
-        self.interval = interval
-    }
-
-    func start() {
-        timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in }
-    }
-
-    func stop() {
-        timer?.invalidate()
-        timer = nil
-    }
-}
-
 // MARK: - Pomodoro Timer
 final class PomodoroTimer: ObservableObject {
     let duration: CGFloat
