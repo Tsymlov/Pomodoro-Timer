@@ -29,8 +29,6 @@ struct TimerView: View {
                 Spacer()
             }
             .padding()
-            .navigationTitle("Pomodoro Timer")
-            .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     settingsButton
@@ -42,10 +40,6 @@ struct TimerView: View {
     // MARK: - Session Header
     private var sessionHeader: some View {
         VStack(spacing: 8) {
-            Text(store.currentSession.emoji)
-                .font(.system(size: 60))
-                .animation(.easeInOut, value: store.currentSession)
-
             Text(store.currentSession.title)
                 .font(.title2)
                 .fontWeight(.semibold)
@@ -79,7 +73,7 @@ struct TimerView: View {
             // Time display
             VStack(spacing: 4) {
                 Text(store.formattedTime)
-                    .font(.system(size: 48, weight: .light, design: .monospaced))
+                    .font(.system(size: 48, weight: .heavy))
                     .foregroundColor(.primary)
 
                 Text(store.timerState.displayName)
