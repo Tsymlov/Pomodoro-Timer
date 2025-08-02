@@ -7,12 +7,6 @@
 import Foundation
 import Combine
 
-// MARK: - Constants
-private enum Constants {
-    static let pomodoroDuration: CGFloat = 1500 // secs. It is 25 mins.
-    static let timeInterval: TimeInterval = 1 //secs
-}
-
 // MARK: - Pomodoro Timer
 final class PomodoroTimer: ObservableObject {
     let duration: CGFloat
