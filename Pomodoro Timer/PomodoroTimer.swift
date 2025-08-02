@@ -10,6 +10,7 @@ import Combine
 // MARK: - Constants
 private enum Constants {
     static let pomodoroDuration: CGFloat = 1500 // secs. It is 25 mins.
+    static let timeInterval: TimeInterval = 1 //secs
 }
 
 // MARK: - Real Timer Implementation
@@ -23,7 +24,7 @@ final class SystemTimer: TimerProtocol {
             .eraseToAnyPublisher()
     }
 
-    init(interval: TimeInterval = 1.0) {
+    init(interval: TimeInterval = Constants.timeInterval) {
         self.interval = interval
     }
 
@@ -39,10 +40,11 @@ final class SystemTimer: TimerProtocol {
 
 // MARK: - Pomodoro Timer
 final class PomodoroTimer: ObservableObject {
+    let duration: CGFloat
+
     @Published var isRunning: Bool = false
     @Published var countDownTime: CGFloat
 
-    private let duration: CGFloat
     private let timer: TimerProtocol
     private var cancellables = Set<AnyCancellable>()
 
