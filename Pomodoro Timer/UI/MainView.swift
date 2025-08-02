@@ -9,13 +9,7 @@ import SwiftUI
 
 struct MainView: View {
     var body: some View {
-        ZStack {
-            TimerView()
-            Button(action: {}) {
-                Text("Toggle")
-
-            }
-        }
+        TimerView()
     }
 }
 
