@@ -185,25 +185,25 @@ struct TimerView: View {
     private var goalInputSheet: some View {
         NavigationView {
             VStack(spacing: 20) {
-                Text("What's your goal for this \(store.currentSession.title.lowercased()) session?")
+                Text("What's your goal?")
                     .font(.title3)
                     .fontWeight(.medium)
                     .multilineTextAlignment(.center)
                     .padding(.top)
 
-                #if os(iOS)
-                    AutoFocusTextField(
-                        text: $goalText,
-                        placeholder: "Enter your goal...",
-                        onCommit: saveGoal
-                    )
-                    .frame(height: 44)
+#if os(iOS)
+                AutoFocusTextField(
+                    text: $goalText,
+                    placeholder: "Enter your goal...",
+                    onCommit: saveGoal
+                )
+                .frame(height: 44)
+                .padding(.horizontal)
+#else
+                TextField("Enter your goal...", text: $goalText)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
                     .padding(.horizontal)
-                #else
-                    TextField("Enter your goal...", text: $goalText)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                        .padding(.horizontal)
-                #endif
+#endif
 
                 Spacer()
             }
@@ -231,6 +231,9 @@ struct TimerView: View {
         .onAppear {
             goalText = store.currentGoal?.text ?? ""
         }
+#if os(iOS)
+        .presentationDetents([.height(200)])
+#endif
     }
 
     private func saveGoal() {
