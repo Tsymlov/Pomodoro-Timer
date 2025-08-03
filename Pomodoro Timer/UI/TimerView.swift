@@ -134,20 +134,11 @@ struct TimerView: View {
 
     // MARK: - Goal Display
     private func goalDisplay(_ goal: SessionGoal) -> some View {
-        HStack {
-            VStack(spacing: 8) {
-                Text("Session Goal")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .textCase(.uppercase)
-                    .tracking(0.5)
-
-                Text(goal.text)
-                    .font(.body)
-                    .foregroundColor(.primary)
-                    .multilineTextAlignment(.center)
-                    .frame(maxWidth: .infinity)
-            }
+        Text(goal.text)
+            .font(.body)
+            .foregroundColor(.primary)
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: .infinity)
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 12)
@@ -157,33 +148,26 @@ struct TimerView: View {
                             .stroke(sessionColor, lineWidth: 1)
                     )
             )
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.horizontal)
+            .padding(.horizontal)
     }
 
     // MARK: - Goal Placeholder
     private var goalPlaceholder: some View {
-        Button(action: {
-            showingGoalInput = true
-        }) {
-            HStack {
-                VStack(spacing: 4) {
-                    Image(systemName: "target")
-                        .font(.title2)
-                        .foregroundColor(.secondary)
-
-                    Text("Set a goal for this session")
-                        .font(.body)
-                        .foregroundColor(.secondary)
-                }
-                .frame(maxWidth: .infinity)
-                .padding()
-                .background(
-                    RoundedRectangle(cornerRadius: 12)
-                        .stroke(Color.gray.opacity(0.3), style: StrokeStyle(lineWidth: 1, dash: [5]))
-                )
+        Button(action: { showingGoalInput = true }) {
+            VStack(spacing: 4) {
+                Image(systemName: "target")
+                    .font(.title2)
+                    .foregroundColor(.secondary)
+                Text("Set a goal for this session")
+                    .font(.body)
+                    .foregroundColor(.secondary)
             }
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color.gray.opacity(0.3), style: StrokeStyle(lineWidth: 1, dash: [5]))
+            )
         }
         .buttonStyle(PlainButtonStyle())
         .frame(maxWidth: .infinity)
