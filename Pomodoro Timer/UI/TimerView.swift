@@ -134,26 +134,34 @@ struct TimerView: View {
 
     // MARK: - Goal Display
     private func goalDisplay(_ goal: SessionGoal) -> some View {
-        Text(goal.text)
-            .font(.body)
-            .foregroundColor(.primary)
-            .multilineTextAlignment(.center)
-            .frame(maxWidth: .infinity)
-            .padding()
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(Color.gray.opacity(0.1))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 12)
-                            .stroke(sessionColor, lineWidth: 1)
-                    )
-            )
-            .padding(.horizontal)
+        Button(action: {
+            showingGoalInput = true
+        }) {
+            Text(goal.text)
+                .font(.body)
+                .foregroundColor(.primary)
+                .multilineTextAlignment(.center)
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color.gray.opacity(0.1))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(sessionColor, lineWidth: 1)
+                        )
+                )
+        }
+        .buttonStyle(PlainButtonStyle())
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal)
     }
 
     // MARK: - Goal Placeholder
     private var goalPlaceholder: some View {
-        Button(action: { showingGoalInput = true }) {
+        Button(action: {
+            showingGoalInput = true
+        }) {
             VStack(spacing: 4) {
                 Image(systemName: "target")
                     .font(.title2)
