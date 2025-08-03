@@ -33,14 +33,12 @@ struct TimerView: View {
             }
             .padding()
             .navigationTitle(store.currentSession.title)
-#if os(iOS)
-            .navigationBarTitleDisplayMode(.inline)
+            .modifier(PlatformNavigationModifier())
             .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .primaryAction) {
                     settingsButton
                 }
             }
-#endif
             .sheet(isPresented: $showingGoalInput) {
                 goalInputSheet
             }
@@ -216,16 +214,16 @@ struct TimerView: View {
             }
             .padding()
             .navigationTitle("Session Goal")
-            .navigationBarTitleDisplayMode(.inline)
+            .modifier(PlatformNavigationModifier())
             .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
+                ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
                         showingGoalInput = false
                         goalText = ""
                     }
                 }
 
-                ToolbarItem(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
                         store.send(.setGoal(goalText))
                         showingGoalInput = false
@@ -291,6 +289,17 @@ struct TimerView: View {
         case .shortBreak, .longBreak:
             store.send(.skipToPomodoro)
         }
+    }
+}
+
+// MARK: - Platform Navigation Modifier
+struct PlatformNavigationModifier: ViewModifier {
+    func body(content: Content) -> some View {
+#if os(iOS)
+        content.navigationBarTitleDisplayMode(.inline)
+#else
+        content
+#endif
     }
 }
 
