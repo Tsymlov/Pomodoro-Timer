@@ -14,9 +14,6 @@ struct TimerView: View {
         NavigationView {
             VStack(spacing: 30) {
 
-                // MARK: - Session Header
-                sessionHeader
-
                 Spacer()
 
                 // MARK: - Main Timer Circle
@@ -30,25 +27,13 @@ struct TimerView: View {
                 Spacer()
             }
             .padding()
+            .navigationTitle(store.currentSession.title)
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     settingsButton
                 }
             }
-        }
-    }
-
-    // MARK: - Session Header
-    private var sessionHeader: some View {
-        VStack(spacing: 8) {
-            Text(store.currentSession.title)
-                .font(.title2)
-                .fontWeight(.semibold)
-                .foregroundColor(.secondary)
-
-            Text("Cycle \(store.currentCycle)")
-                .font(.caption)
-                .foregroundColor(.secondary)
         }
     }
 
