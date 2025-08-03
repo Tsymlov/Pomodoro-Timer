@@ -28,12 +28,14 @@ struct TimerView: View {
             }
             .padding()
             .navigationTitle(store.currentSession.title)
+#if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     settingsButton
                 }
             }
+#endif
         }
     }
 
