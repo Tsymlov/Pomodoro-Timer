@@ -99,9 +99,6 @@ func reducer(state: inout AppState, action: Action) {
             state.currentGoal = SessionGoal(sessionType: state.currentSession, text: goalText)
         }
         state.isGoalInputPresented = false
-
-    case .completeCurrentGoal:
-        state.currentGoal?.isCompleted = true
     }
 }
 

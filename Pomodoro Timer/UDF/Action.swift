@@ -24,5 +24,4 @@ enum Action: Equatable {
     case showGoalInput
     case hideGoalInput
     case setGoal(String)
-    case completeCurrentGoal
 }
