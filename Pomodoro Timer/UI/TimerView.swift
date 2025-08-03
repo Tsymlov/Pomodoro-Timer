@@ -191,15 +191,19 @@ struct TimerView: View {
                     .multilineTextAlignment(.center)
                     .padding(.top)
 
-#if os(iOS)
-                AutoFocusTextField(text: $goalText, placeholder: "Enter your goal...")
+                #if os(iOS)
+                    AutoFocusTextField(
+                        text: $goalText,
+                        placeholder: "Enter your goal...",
+                        onCommit: saveGoal
+                    )
                     .frame(height: 44)
                     .padding(.horizontal)
-#else
-                TextField("Enter your goal...", text: $goalText)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding(.horizontal)
-#endif
+                #else
+                    TextField("Enter your goal...", text: $goalText)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                        .padding(.horizontal)
+                #endif
 
                 Spacer()
             }
@@ -227,6 +231,18 @@ struct TimerView: View {
         .onAppear {
             goalText = store.currentGoal?.text ?? ""
         }
+    }
+
+    private func saveGoal() {
+        guard !goalText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+        store.send(.setGoal(goalText))
+        showingGoalInput = false
+        goalText = ""
+    }
+
+    private func cancelGoal() {
+        showingGoalInput = false
+        goalText = ""
     }
 
     // MARK: - Settings Button
@@ -286,11 +302,11 @@ struct TimerView: View {
 // MARK: - Platform Navigation Modifier
 struct PlatformNavigationModifier: ViewModifier {
     func body(content: Content) -> some View {
-#if os(iOS)
-        content.navigationBarTitleDisplayMode(.inline)
-#else
-        content
-#endif
+        #if os(iOS)
+            content.navigationBarTitleDisplayMode(.inline)
+        #else
+            content
+        #endif
     }
 }
 

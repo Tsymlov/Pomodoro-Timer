@@ -8,34 +8,37 @@
 import SwiftUI
 
 struct AutoFocusTextField: UIViewRepresentable {
+    @Binding var text: String
+    var placeholder: String
+    var onCommit: (() -> Void)? = nil
+    
     class Coordinator: NSObject, UITextFieldDelegate {
         var parent: AutoFocusTextField
         init(_ parent: AutoFocusTextField) { self.parent = parent }
         func textFieldDidChangeSelection(_ textField: UITextField) {
             parent.text = textField.text ?? ""
         }
+        func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+            parent.onCommit?()
+            return true
+        }
     }
-
-    @Binding var text: String
-    var placeholder: String
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-
+    
+    func makeCoordinator() -> Coordinator { Coordinator(self) }
+    
     func makeUIView(context: Context) -> UITextField {
         let textField = UITextField()
         textField.placeholder = placeholder
         textField.borderStyle = .roundedRect
+        textField.returnKeyType = .done
         textField.delegate = context.coordinator
-
+        
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             textField.becomeFirstResponder()
         }
-
         return textField
     }
-
+    
     func updateUIView(_ uiView: UITextField, context: Context) {
         uiView.text = text
     }
