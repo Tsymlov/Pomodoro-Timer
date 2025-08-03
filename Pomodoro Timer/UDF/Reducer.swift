@@ -87,11 +87,25 @@ func reducer(state: inout AppState, action: Action) {
     case .resetDailyStatistics:
         state.statistics = TimerStatistics(dailyGoal: state.statistics.dailyGoal)
         state.currentCycle = 1
+
+    case .showGoalInput:
+        state.isGoalInputPresented = true
+
+    case .hideGoalInput:
+        state.isGoalInputPresented = false
+
+    case .setGoal(let goalText):
+        if !goalText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            state.currentGoal = SessionGoal(sessionType: state.currentSession, text: goalText)
+        }
+        state.isGoalInputPresented = false
+
+    case .completeCurrentGoal:
+        state.currentGoal?.isCompleted = true
     }
 }
 
 // MARK: - Reducer Helper Functions
-
 private func recordCurrentSession(state: inout AppState, wasCompleted: Bool) {
     guard let startTime = state.currentSessionStartTime else { return }
 
@@ -140,4 +154,5 @@ private func moveToNextSession(state: inout AppState) {
     state.timeRemaining = state.getCurrentSessionDuration()
     state.timerState = .idle
     state.currentSessionStartTime = nil
+    state.currentGoal = nil // Clear goal when moving to next session
 }

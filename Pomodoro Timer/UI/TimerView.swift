@@ -9,6 +9,8 @@ import SwiftUI
 
 struct TimerView: View {
     @StateObject private var store = Store()
+    @State private var goalText = ""
+    @State private var showingGoalInput = false
 
     var body: some View {
         NavigationView {
@@ -20,6 +22,9 @@ struct TimerView: View {
                 timerCircle
 
                 Spacer()
+
+                // MARK: - Goal Section
+                goalSection
 
                 // MARK: - Control Buttons
                 controlButtons
@@ -36,6 +41,20 @@ struct TimerView: View {
                 }
             }
 #endif
+            .sheet(isPresented: $showingGoalInput) {
+                goalInputSheet
+            }
+        }
+    }
+
+    // MARK: - Goal Section
+    private var goalSection: some View {
+        Group {
+            if let goal = store.currentGoal {
+                goalDisplay(goal)
+            } else {
+                goalPlaceholder
+            }
         }
     }
 
@@ -69,6 +88,10 @@ struct TimerView: View {
                     .foregroundColor(.secondary)
                     .textCase(.uppercase)
                     .tracking(1)
+
+                Text("Cycle \(store.currentCycle)")
+                    .font(.caption2)
+                    .foregroundColor(.secondary)
             }
         }
     }
@@ -108,6 +131,112 @@ struct TimerView: View {
                     .background(Color.blue.opacity(0.1))
                     .clipShape(Circle())
             }
+        }
+    }
+
+    // MARK: - Goal Display
+    private func goalDisplay(_ goal: SessionGoal) -> some View {
+        VStack(spacing: 8) {
+            HStack {
+                Text("Session Goal")
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+                    .textCase(.uppercase)
+                    .tracking(0.5)
+
+                Spacer()
+
+                if !goal.isCompleted {
+                    Button(action: {
+                        store.send(.completeCurrentGoal)
+                    }) {
+                        Image(systemName: "checkmark.circle")
+                            .foregroundColor(.green)
+                    }
+                }
+            }
+
+            Text(goal.text)
+                .font(.body)
+                .foregroundColor(goal.isCompleted ? .secondary : .primary)
+                .strikethrough(goal.isCompleted)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+        }
+        .padding()
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.gray.opacity(0.1))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(goal.isCompleted ? Color.green : sessionColor, lineWidth: 1)
+                )
+        )
+    }
+
+    // MARK: - Goal Placeholder
+    private var goalPlaceholder: some View {
+        Button(action: {
+            showingGoalInput = true
+        }) {
+            VStack(spacing: 4) {
+                Image(systemName: "target")
+                    .font(.title2)
+                    .foregroundColor(.secondary)
+
+                Text("Set a goal for this session")
+                    .font(.body)
+                    .foregroundColor(.secondary)
+            }
+            .padding()
+            .background(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(Color.gray.opacity(0.3), style: StrokeStyle(lineWidth: 1, dash: [5]))
+            )
+        }
+        .buttonStyle(PlainButtonStyle())
+    }
+
+    // MARK: - Goal Input Sheet
+    private var goalInputSheet: some View {
+        NavigationView {
+            VStack(spacing: 20) {
+                Text("What's your goal for this \(store.currentSession.title.lowercased()) session?")
+                    .font(.title3)
+                    .fontWeight(.medium)
+                    .multilineTextAlignment(.center)
+                    .padding(.top)
+
+                TextField("Enter your goal...", text: $goalText, axis: .vertical)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .lineLimit(3...6)
+                    .padding(.horizontal)
+
+                Spacer()
+            }
+            .padding()
+            .navigationTitle("Session Goal")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button("Cancel") {
+                        showingGoalInput = false
+                        goalText = ""
+                    }
+                }
+
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Save") {
+                        store.send(.setGoal(goalText))
+                        showingGoalInput = false
+                        goalText = ""
+                    }
+                    .disabled(goalText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                }
+            }
+        }
+        .onAppear {
+            goalText = store.currentGoal?.text ?? ""
         }
     }
 

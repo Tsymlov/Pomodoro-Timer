@@ -127,4 +127,6 @@ final class Store: ObservableObject {
     var mostProductiveHour: Int? { state.statistics.mostProductiveHour }
     var longestStreak: Int { state.statistics.longestStreak }
     var sessionHistory: [SessionRecord] { state.statistics.sessionHistory }
+    var currentGoal: SessionGoal? { state.currentGoal }
+    var isGoalInputPresented: Bool { state.isGoalInputPresented }
 }

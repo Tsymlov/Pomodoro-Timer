@@ -21,4 +21,8 @@ enum Action: Equatable {
     case updateSettings(Settings)
     case setDailyGoal(Int)
     case resetDailyStatistics
+    case showGoalInput
+    case hideGoalInput
+    case setGoal(String)
+    case completeCurrentGoal
 }
