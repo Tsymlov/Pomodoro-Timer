@@ -17,14 +17,15 @@ struct TimerView: View {
                 // MARK: - Session Header
                 sessionHeader
 
+                Spacer()
+
                 // MARK: - Main Timer Circle
                 timerCircle
 
+                Spacer()
+
                 // MARK: - Control Buttons
                 controlButtons
-
-                // MARK: - Statistics
-                statisticsSection
 
                 Spacer()
             }
@@ -123,39 +124,6 @@ struct TimerView: View {
         }
     }
 
-    // MARK: - Statistics Section
-    private var statisticsSection: some View {
-        VStack(spacing: 12) {
-            HStack {
-                StatCard(
-                    title: "Today",
-                    value: "\(store.todayStats.completedPomodoros)",
-                    subtitle: "pomodoros",
-                    color: .red
-                )
-
-                StatCard(
-                    title: "Streak",
-                    value: "\(store.statistics.currentStreak)",
-                    subtitle: "days",
-                    color: .orange
-                )
-
-                StatCard(
-                    title: "Goal",
-                    value: "\(Int(store.statistics.progressToGoal * 100))%",
-                    subtitle: "complete",
-                    color: .green
-                )
-            }
-
-            // Progress bar for daily goal
-            ProgressView(value: store.statistics.progressToGoal)
-                .progressViewStyle(LinearProgressViewStyle(tint: .green))
-                .scaleEffect(y: 2)
-        }
-    }
-
     // MARK: - Settings Button
     private var settingsButton: some View {
         Button(action: {
@@ -207,37 +175,6 @@ struct TimerView: View {
         case .shortBreak, .longBreak:
             store.send(.skipToPomodoro)
         }
-    }
-}
-
-// MARK: - Statistics Card Component
-struct StatCard: View {
-    let title: String
-    let value: String
-    let subtitle: String
-    let color: Color
-
-    var body: some View {
-        VStack(spacing: 4) {
-            Text(title)
-                .font(.caption)
-                .foregroundColor(.secondary)
-                .textCase(.uppercase)
-                .tracking(0.5)
-
-            Text(value)
-                .font(.title2)
-                .fontWeight(.bold)
-                .foregroundColor(color)
-
-            Text(subtitle)
-                .font(.caption2)
-                .foregroundColor(.secondary)
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 12)
-        .background(Color.gray.opacity(0.05))
-        .cornerRadius(12)
     }
 }
 
