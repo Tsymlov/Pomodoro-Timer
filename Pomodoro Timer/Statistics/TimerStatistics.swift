@@ -120,3 +120,45 @@ struct TimerStatistics: Equatable {
         return newStats
     }
 }
+
+// MARK: - Session Goal Analytics
+extension TimerStatistics {
+    // Group sessions by goal text (combines goals with same name)
+    func sessionsByGoalText(goals: [SessionGoal]) -> [String: [SessionRecord]] {
+        let goalsById = Dictionary(uniqueKeysWithValues: goals.map { ($0.id, $0) })
+
+        return Dictionary(grouping: sessionHistory.compactMap { record -> (String, SessionRecord)? in
+            guard let goalId = record.goalId,
+                  let goalText = goalsById[goalId]?.text else { return nil }
+            return (goalText, record)
+        }, by: { $0.0 })
+        .mapValues { $0.map { $0.1 } }
+    }
+
+    // Statistics for goal text (combined)
+    func statsForGoalText(_ goalText: String, goals: [SessionGoal]) -> (sessions: [SessionRecord], totalTime: TimeInterval, completedSessions: Int) {
+        let goalsById = Dictionary(uniqueKeysWithValues: goals.map { ($0.id, $0) })
+
+        let goalSessions = sessionHistory.filter { record in
+            guard let goalId = record.goalId,
+                  let goal = goalsById[goalId] else { return false }
+            return goal.text == goalText
+        }
+
+        let totalTime = goalSessions.filter { $0.wasCompleted }.reduce(0) { $0 + $1.duration }
+        let completed = goalSessions.filter { $0.wasCompleted }.count
+
+        return (goalSessions, totalTime, completed)
+    }
+
+    // List of unique goal texts for reports
+    func uniqueGoalTexts(goals: [SessionGoal]) -> [String] {
+        let goalsById = Dictionary(uniqueKeysWithValues: goals.map { ($0.id, $0) })
+
+        let goalTexts = sessionHistory.compactMap { record in
+            record.goalId.flatMap { goalsById[$0]?.text }
+        }
+
+        return Array(Set(goalTexts)).sorted()
+    }
+}

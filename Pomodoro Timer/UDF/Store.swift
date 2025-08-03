@@ -11,11 +11,11 @@ import Combine
 @MainActor
 final class Store: ObservableObject {
     @Published private(set) var state = AppState()
-
+    
     private let timer: TimerProtocol
     private var cancellables = Set<AnyCancellable>()
     private let notificationManager = NotificationManager.shared
-
+    
     // MARK: - Initialization
     init(timer: TimerProtocol = SystemTimer()) {
         self.timer = timer
@@ -23,14 +23,14 @@ final class Store: ObservableObject {
         loadSettings()
         notificationManager.requestPermission()
     }
-
+    
     // MARK: - Action Dispatch
     func send(_ action: Action) {
         let previousState = state
         reducer(state: &state, action: action)
         handleSideEffects(previousState: previousState, action: action)
     }
-
+    
     // MARK: - Side Effects
     private func handleSideEffects(previousState: AppState, action: Action) {
         switch action {
@@ -39,43 +39,43 @@ final class Store: ObservableObject {
                 timer.start()
                 scheduleNotificationForCurrentSession()
             }
-
+            
         case .pause, .stop, .reset:
             timer.stop()
             notificationManager.cancelAllNotifications()
-
+            
         case .complete:
             if previousState.timerState == .running && state.timerState == .completed {
                 timer.stop()
                 notificationManager.cancelAllNotifications()
                 scheduleCompletionNotification()
-
+                
                 // Auto move to next session after delay
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
                     self?.send(.moveToNextSession)
                 }
             }
-
+            
         case .tick:
             if previousState.timerState == .running && state.timerState == .completed {
                 timer.stop()
                 notificationManager.cancelAllNotifications()
                 scheduleCompletionNotification()
-
+                
                 // Auto move to next session after delay
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
                     self?.send(.moveToNextSession)
                 }
             }
-
+            
         case .updateSettings:
             state.settings.save()
-
+            
         default:
             break
         }
     }
-
+    
     // MARK: - Timer Setup
     private func setupTimer() {
         timer.publisher
@@ -84,13 +84,13 @@ final class Store: ObservableObject {
             }
             .store(in: &cancellables)
     }
-
+    
     // MARK: - Settings
     private func loadSettings() {
         let loadedSettings = Settings.load()
         send(.updateSettings(loadedSettings))
     }
-
+    
     // MARK: - Notifications
     private func scheduleNotificationForCurrentSession() {
         notificationManager.scheduleNotification(
@@ -98,14 +98,14 @@ final class Store: ObservableObject {
             in: state.timeRemaining
         )
     }
-
+    
     private func scheduleCompletionNotification() {
         notificationManager.scheduleNotification(
             for: state.currentSession,
             in: 0.1
         )
     }
-
+    
     // MARK: - Convenience Getters
     var timerState: TimerState { state.timerState }
     var currentSession: SessionType { state.currentSession }
@@ -118,7 +118,8 @@ final class Store: ObservableObject {
     var canPause: Bool { state.canPause }
     var canReset: Bool { state.canReset }
     var settings: Settings { state.settings }
-
+    var allGoals: [SessionGoal] { state.allGoals }
+    
     // MARK: - Analytics Access
     var todayStats: DailyStats { state.statistics.todayStats }
     var last7DaysStats: [DailyStats] { state.statistics.last7DaysStats }
@@ -129,4 +130,16 @@ final class Store: ObservableObject {
     var sessionHistory: [SessionRecord] { state.statistics.sessionHistory }
     var currentGoal: SessionGoal? { state.currentGoal }
     var isGoalInputPresented: Bool { state.isGoalInputPresented }
+    
+    func sessionsByGoalText() -> [String: [SessionRecord]] {
+        state.statistics.sessionsByGoalText(goals: state.allGoals)
+    }
+    
+    func statsForGoalText(_ goalText: String) -> (sessions: [SessionRecord], totalTime: TimeInterval, completedSessions: Int) {
+        state.statistics.statsForGoalText(goalText, goals: state.allGoals)
+    }
+    
+    func uniqueGoalTexts() -> [String] {
+        state.statistics.uniqueGoalTexts(goals: state.allGoals)
+    }
 }

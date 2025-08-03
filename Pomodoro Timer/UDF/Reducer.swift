@@ -96,7 +96,9 @@ func reducer(state: inout AppState, action: Action) {
 
     case .setGoal(let goalText):
         if !goalText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            state.currentGoal = SessionGoal(sessionType: state.currentSession, text: goalText)
+            let newGoal = SessionGoal(sessionType: state.currentSession, text: goalText)
+            state.currentGoal = newGoal
+            state.allGoals.append(newGoal) // ADD: save to history
         }
         state.isGoalInputPresented = false
     }
@@ -114,7 +116,8 @@ private func recordCurrentSession(state: inout AppState, wasCompleted: Bool) {
         startTime: startTime,
         endTime: endTime,
         duration: actualDuration,
-        wasCompleted: wasCompleted
+        wasCompleted: wasCompleted,
+        goalId: state.currentGoal?.id
     )
 
     state.statistics = state.statistics.addSessionRecord(record)

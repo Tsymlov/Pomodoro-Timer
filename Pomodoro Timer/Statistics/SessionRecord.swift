@@ -14,14 +14,16 @@ struct SessionRecord: Equatable, Codable, Identifiable {
     let endTime: Date
     let duration: TimeInterval
     let wasCompleted: Bool
+    let goalId: UUID?
 
-    init(sessionType: SessionType, startTime: Date, endTime: Date, duration: TimeInterval, wasCompleted: Bool) {
+    init(sessionType: SessionType, startTime: Date, endTime: Date, duration: TimeInterval, wasCompleted: Bool, goalId: UUID? = nil) {
         self.id = UUID()
         self.sessionType = sessionType
         self.startTime = startTime
         self.endTime = endTime
         self.duration = duration
         self.wasCompleted = wasCompleted
+        self.goalId = goalId
     }
 
     var day: Date {

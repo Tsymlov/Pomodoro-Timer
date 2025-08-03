@@ -17,6 +17,7 @@ struct AppState: Equatable {
     var currentSessionStartTime: Date?
     var currentGoal: SessionGoal?
     var isGoalInputPresented: Bool = false
+    var allGoals: [SessionGoal] = []
 
     // MARK: - Computed Properties
     var progress: Double {
