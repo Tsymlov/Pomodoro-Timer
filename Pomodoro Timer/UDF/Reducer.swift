@@ -154,5 +154,4 @@ private func moveToNextSession(state: inout AppState) {
     state.timeRemaining = state.getCurrentSessionDuration()
     state.timerState = .idle
     state.currentSessionStartTime = nil
-    state.currentGoal = nil // Clear goal when moving to next session
 }
