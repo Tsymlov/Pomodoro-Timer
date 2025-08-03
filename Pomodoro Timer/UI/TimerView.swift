@@ -191,10 +191,15 @@ struct TimerView: View {
                     .multilineTextAlignment(.center)
                     .padding(.top)
 
-                TextField("Enter your goal...", text: $goalText, axis: .vertical)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .lineLimit(3...6)
+#if os(iOS)
+                AutoFocusTextField(text: $goalText, placeholder: "Enter your goal...")
+                    .frame(height: 44)
                     .padding(.horizontal)
+#else
+                TextField("Enter your goal...", text: $goalText)
+                    .textFieldStyle(RoundedBorderTextFieldStyle())
+                    .padding(.horizontal)
+#endif
 
                 Spacer()
             }
