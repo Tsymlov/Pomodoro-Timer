@@ -135,29 +135,15 @@ struct TimerView: View {
     // MARK: - Goal Display
     private func goalDisplay(_ goal: SessionGoal) -> some View {
         VStack(spacing: 8) {
-            HStack {
-                Text("Session Goal")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .textCase(.uppercase)
-                    .tracking(0.5)
-
-                Spacer()
-
-                if !goal.isCompleted {
-                    Button(action: {
-                        store.send(.completeCurrentGoal)
-                    }) {
-                        Image(systemName: "checkmark.circle")
-                            .foregroundColor(.green)
-                    }
-                }
-            }
+            Text("Session Goal")
+                .font(.caption)
+                .foregroundColor(.secondary)
+                .textCase(.uppercase)
+                .tracking(0.5)
 
             Text(goal.text)
                 .font(.body)
-                .foregroundColor(goal.isCompleted ? .secondary : .primary)
-                .strikethrough(goal.isCompleted)
+                .foregroundColor(.primary)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
         }
@@ -167,7 +153,7 @@ struct TimerView: View {
                 .fill(Color.gray.opacity(0.1))
                 .overlay(
                     RoundedRectangle(cornerRadius: 12)
-                        .stroke(goal.isCompleted ? Color.green : sessionColor, lineWidth: 1)
+                        .stroke(sessionColor, lineWidth: 1)
                 )
         )
     }
