@@ -143,3 +143,39 @@ final class Store: ObservableObject {
         state.statistics.uniqueGoalTexts(goals: state.allGoals)
     }
 }
+
+// MARK: - Pomodoro Cycles Display
+
+extension Store {
+    
+    /// Returns a string displaying today's pomodoros organized by cycles
+    var todayPomodorosCyclesDisplay: String {
+        let completedPomodoros = state.statistics.todayStats.completedPomodoros
+        return pomodorosCyclesString(for: completedPomodoros)
+    }
+
+    /// Formats a cycles string for the given number of completed pomodoros
+    private func pomodorosCyclesString(for completedPomodoros: Int) -> String {
+        let fullCycles = completedPomodoros / Constants.pomodorosUntilLongBreak
+        let remainingPomodoros = completedPomodoros % Constants.pomodorosUntilLongBreak
+
+        var cycleStrings: [String] = []
+
+        // Add complete cycles
+        for _ in 0..<fullCycles {
+            cycleStrings.append("\(Constants.pomodorosUntilLongBreak)×")
+        }
+
+        // Add current incomplete cycle if there are pomodoros
+        if remainingPomodoros > 0 {
+            cycleStrings.append("\(remainingPomodoros)×")
+        }
+
+        // If no pomodoros at all, show starting message
+        if cycleStrings.isEmpty {
+            return "0×"
+        }
+
+        return cycleStrings.joined(separator: " ")
+    }
+}

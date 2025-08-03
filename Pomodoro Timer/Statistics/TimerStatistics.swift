@@ -162,3 +162,57 @@ extension TimerStatistics {
         return Array(Set(goalTexts)).sorted()
     }
 }
+
+// MARK: - Cycles Analytics
+extension TimerStatistics {
+    /// Total number of complete cycles (every 4 pomodoros)
+    var totalCompletedCycles: Int {
+        completedPomodoros / Constants.pomodorosUntilLongBreak
+    }
+
+    /// Number of pomodoros in the current incomplete cycle
+    var pomodorosInCurrentCycle: Int {
+        completedPomodoros % Constants.pomodorosUntilLongBreak
+    }
+
+    /// Complete cycles for today
+    var todayCompletedCycles: Int {
+        todayStats.completedPomodoros / Constants.pomodorosUntilLongBreak
+    }
+
+    /// Pomodoros in current cycle today
+    var todayPomodorosInCurrentCycle: Int {
+        todayStats.completedPomodoros % Constants.pomodorosUntilLongBreak
+    }
+
+    /// Progress to next long break (0.0 - 1.0)
+    var progressToLongBreak: Double {
+        let pomodorosInCycle = Double(pomodorosInCurrentCycle)
+        return pomodorosInCycle / Double(Constants.pomodorosUntilLongBreak)
+    }
+
+    /// Progress to next long break for today (0.0 - 1.0)
+    var todayProgressToLongBreak: Double {
+        let pomodorosInCycle = Double(todayPomodorosInCurrentCycle)
+        return pomodorosInCycle / Double(Constants.pomodorosUntilLongBreak)
+    }
+
+    /// Average number of cycles per day for the last 7 days
+    var averageCyclesPerDay: Double {
+        let totalCycles = last7DaysStats.map { $0.completedPomodoros / Constants.pomodorosUntilLongBreak }.reduce(0, +)
+        return Double(totalCycles) / 7.0
+    }
+
+    /// Best day by number of cycles in the last month
+    var bestCycleDay: (date: Date, cycles: Int)? {
+        let dayWithMostCycles = last30DaysStats.max { first, second in
+            let firstCycles = first.completedPomodoros / Constants.pomodorosUntilLongBreak
+            let secondCycles = second.completedPomodoros / Constants.pomodorosUntilLongBreak
+            return firstCycles < secondCycles
+        }
+
+        guard let bestDay = dayWithMostCycles else { return nil }
+        let cycles = bestDay.completedPomodoros / Constants.pomodorosUntilLongBreak
+        return (bestDay.date, cycles)
+    }
+}

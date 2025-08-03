@@ -76,21 +76,25 @@ struct TimerView: View {
                 .animation(.easeInOut, value: store.progress)
 
             // Time display
-            VStack(spacing: 4) {
+            VStack(spacing: 6) {
+
                 Text(store.formattedTime)
-                    .font(.system(size: 48, weight: .heavy))
-                    .foregroundColor(.primary)
+                    .font(.system(size: 64, weight: .heavy))
+                    .foregroundColor(sessionColor)
 
-                Text(store.timerState.displayName)
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .textCase(.uppercase)
-                    .tracking(1)
-
-                Text("Cycle \(store.currentCycle)")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
+                // Pomodoro cycles display
+                if store.statistics.todayStats.completedPomodoros > 0 {
+                    Text(store.todayPomodorosCyclesDisplay)
+                        .font(.system(size: 16, weight: .heavy))
+                        .foregroundColor(sessionColor)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.center)
+                        .frame(maxWidth: 200)
+                        .padding(.top, 10)
+                }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .multilineTextAlignment(.center)
         }
     }
 
