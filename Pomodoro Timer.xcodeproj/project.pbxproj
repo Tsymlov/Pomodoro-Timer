@@ -34,28 +34,16 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
-				UI/TimerView.swift,
 			);
 			target = DE497F322DD120CE00049F12 /* Pomodoro Timer */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
-/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
-		DE0721F72E3EB4F20082E59D /* Exceptions for "Pomodoro Timer" folder in "Copy Bundle Resources" phase from "Pomodoro Timer" target */ = {
-			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
-			buildPhase = DE497F312DD120CE00049F12 /* Resources */;
-			membershipExceptions = (
-				UI/TimerView.swift,
-			);
-		};
-/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		DE497F352DD120CE00049F12 /* Pomodoro Timer */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				DE497F562DD120D100049F12 /* Exceptions for "Pomodoro Timer" folder in "Pomodoro Timer" target */,
-				DE0721F72E3EB4F20082E59D /* Exceptions for "Pomodoro Timer" folder in "Copy Bundle Resources" phase from "Pomodoro Timer" target */,
 			);
 			path = "Pomodoro Timer";
 			sourceTree = "<group>";
