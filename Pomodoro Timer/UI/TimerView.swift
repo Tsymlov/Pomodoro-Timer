@@ -263,7 +263,7 @@ struct TimerView: View {
     private var sessionColor: Color {
         switch store.currentSession {
         case .pomodoro:
-            return .red
+            return .accent
         case .shortBreak:
             return .blue
         case .longBreak:
