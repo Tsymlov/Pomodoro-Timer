@@ -6,5 +6,7 @@
 	<array>
 		<string>remote-notification</string>
 	</array>
+	<key>NSUserNotificationUsageDescription</key>
+	<string>This app uses notifications to alert you when your Pomodoro sessions are completed.</string>
 </dict>
 </plist>
