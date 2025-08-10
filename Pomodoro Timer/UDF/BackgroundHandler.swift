@@ -6,7 +6,11 @@
 //
 
 import Foundation
+#if os(iOS)
 import UIKit
+#elseif os(macOS)
+import AppKit
+#endif
 
 @MainActor
 final class BackgroundHandler {
@@ -38,11 +42,31 @@ final class BackgroundHandler {
                 self?.store?.send(.enterForeground)
             }
         }
+#elseif os(macOS)
+        NotificationCenter.default.addObserver(
+            forName: NSApplication.didHideNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in
+                self?.store?.send(.enterBackground)
+            }
+        }
+
+        NotificationCenter.default.addObserver(
+            forName: NSApplication.didUnhideNotification,
+            object: nil,
+            queue: .main
+        ) { [weak self] _ in
+            Task { @MainActor in
+                self?.store?.send(.enterForeground)
+            }
+        }
 #endif
     }
     
     deinit {
-#if os(iOS)
+#if os(iOS) || os(macOS)
         NotificationCenter.default.removeObserver(self)
 #endif
     }
