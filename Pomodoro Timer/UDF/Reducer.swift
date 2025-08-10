@@ -13,14 +13,12 @@ func reducer(state: inout AppState, action: Action) {
         guard state.canStart else { return }
         state.timerState = .running
         state.currentSessionStartTime = Date()
-
-    case .pause:
-        guard state.canPause else { return }
-        state.timerState = .paused
+        state.sessionEndTime = Date().addingTimeInterval(state.timeRemaining)
 
     case .resume:
         guard state.timerState == .paused else { return }
         state.timerState = .running
+        state.sessionEndTime = Date().addingTimeInterval(state.timeRemaining)
 
     case .stop:
         recordCurrentSession(state: &state, wasCompleted: false)
@@ -35,17 +33,25 @@ func reducer(state: inout AppState, action: Action) {
         state.statistics.currentStreak = 0
         state.currentSessionStartTime = nil
 
-    case .tick:
-        guard state.timerState == .running else { return }
+    case .pause:
+        guard state.canPause else { return }
+        state.timerState = .paused
+        state.sessionEndTime = nil
 
-        if state.timeRemaining > 0 {
-            state.timeRemaining -= 1
-        } else {
-            // Session completed
-            recordCurrentSession(state: &state, wasCompleted: true)
-            updateStatisticsForCompletion(state: &state)
-            state.timerState = .completed
+    case .enterBackground:
+        state.backgroundTime = Date()
+
+    case .enterForeground:
+        guard state.backgroundTime != nil else { return }
+        
+        if state.timerState == .running {
+            updateTimerProgress(state: &state)
         }
+        
+        state.backgroundTime = nil
+
+    case .updateBackgroundTime, .tick:
+        updateTimerProgress(state: &state)
 
     case .complete:
         if state.timerState == .running {
@@ -76,7 +82,6 @@ func reducer(state: inout AppState, action: Action) {
     case .updateSettings(let newSettings):
         state.settings = newSettings
 
-        // If timer is not running, update current time
         if state.timerState == .idle {
             state.timeRemaining = state.getCurrentSessionDuration()
         }
@@ -154,4 +159,23 @@ private func moveToNextSession(state: inout AppState) {
     state.timeRemaining = state.getCurrentSessionDuration()
     state.timerState = .idle
     state.currentSessionStartTime = nil
+}
+
+// MARK: - Helper Functions
+
+private func updateTimerProgress(state: inout AppState) {
+    guard state.timerState == .running, let endTime = state.sessionEndTime else { return }
+    
+    let now = Date()
+    
+    if now >= endTime {
+        // Session completed
+        recordCurrentSession(state: &state, wasCompleted: true)
+        updateStatisticsForCompletion(state: &state)
+        state.timerState = .completed
+        state.timeRemaining = 0
+    } else {
+        // Update remaining time based on system time
+        state.timeRemaining = endTime.timeIntervalSince(now)
+    }
 }

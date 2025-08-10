@@ -24,4 +24,7 @@ enum Action: Equatable {
     case showGoalInput
     case hideGoalInput
     case setGoal(String)
+    case enterBackground
+    case enterForeground
+    case updateBackgroundTime
 }

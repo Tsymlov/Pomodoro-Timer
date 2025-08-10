@@ -11,26 +11,37 @@ import Combine
 @MainActor
 final class Store: ObservableObject {
     @Published private(set) var state = AppState()
-    
+
     private let timer: TimerProtocol
     private var cancellables = Set<AnyCancellable>()
     private let notificationManager = NotificationManager.shared
-    
+    private lazy var backgroundHandler = BackgroundHandler(store: self)
+
     // MARK: - Initialization
     init(timer: TimerProtocol = SystemTimer()) {
         self.timer = timer
         setupTimer()
         loadSettings()
         notificationManager.requestPermission()
+        _ = backgroundHandler
     }
-    
+
     // MARK: - Action Dispatch
     func send(_ action: Action) {
         let previousState = state
         reducer(state: &state, action: action)
         handleSideEffects(previousState: previousState, action: action)
     }
-    
+
+    // MARK: - Timer Setup
+    private func setupTimer() {
+        timer.publisher
+            .sink { [weak self] _ in
+                self?.send(.updateBackgroundTime)
+            }
+            .store(in: &cancellables)
+    }
+
     // MARK: - Side Effects
     private func handleSideEffects(previousState: AppState, action: Action) {
         switch action {
@@ -39,50 +50,44 @@ final class Store: ObservableObject {
                 timer.start()
                 scheduleNotificationForCurrentSession()
             }
-            
+
         case .pause, .stop, .reset:
             timer.stop()
             notificationManager.cancelAllNotifications()
-            
-        case .complete:
+
+        case .complete, .updateBackgroundTime:
+            // Check if session just completed
             if previousState.timerState == .running && state.timerState == .completed {
-                timer.stop()
-                notificationManager.cancelAllNotifications()
-                scheduleCompletionNotification()
-                
-                // Auto move to next session after delay
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-                    self?.send(.moveToNextSession)
-                }
+                handleSessionCompletion()
             }
-            
-        case .tick:
-            if previousState.timerState == .running && state.timerState == .completed {
-                timer.stop()
+
+        case .enterForeground:
+            // Update notifications when returning from background if needed
+            if state.timerState == .running {
                 notificationManager.cancelAllNotifications()
-                scheduleCompletionNotification()
-                
-                // Auto move to next session after delay
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-                    self?.send(.moveToNextSession)
-                }
+                scheduleNotificationForCurrentSession()
             }
-            
+
         case .updateSettings:
             state.settings.save()
-            
+
         default:
             break
         }
     }
+
+    // MARK: - Session Management
+    private func handleSessionCompletion() {
+        timer.stop()
+        notificationManager.cancelAllNotifications()
+        scheduleCompletionNotification()
+        scheduleAutoTransition()
+    }
     
-    // MARK: - Timer Setup
-    private func setupTimer() {
-        timer.publisher
-            .sink { [weak self] _ in
-                self?.send(.tick)
-            }
-            .store(in: &cancellables)
+    private func scheduleAutoTransition() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+            self?.send(.moveToNextSession)
+        }
     }
     
     // MARK: - Settings
@@ -105,7 +110,8 @@ final class Store: ObservableObject {
             in: 0.1
         )
     }
-    
+
+
     // MARK: - Convenience Getters
     var timerState: TimerState { state.timerState }
     var currentSession: SessionType { state.currentSession }
@@ -179,3 +185,4 @@ extension Store {
         return cycleStrings.joined(separator: " ")
     }
 }
+
