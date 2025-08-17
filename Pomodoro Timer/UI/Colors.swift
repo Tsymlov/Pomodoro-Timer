@@ -20,12 +20,6 @@ enum Colors {
     static let skipButtonBackground = Color.blue.opacity(0.1)
     static let mainButtonText = Color.white
 
-    // MARK: - UI Elements
-    static let settingsIcon = Color.gray
-    static let timerCircleBackground = Color.gray.opacity(0.2)
-    static let goalBackground = Color.gray.opacity(0.1)
-    static let goalBorderDashed = Color.gray.opacity(0.3)
-
     // MARK: - Text Colors
     static let primaryText = Color.primary
     static let secondaryText = Color.secondary
