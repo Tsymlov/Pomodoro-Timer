@@ -32,8 +32,8 @@ Built using **Unidirectional Data Flow (UDF)** architecture:
 
 ### Prerequisites
 
-- Xcode 16.4+
-- iOS 18.4+ / macOS 14.0+
+- Xcode 16.0+
+- iOS 18.0+ / macOS 15.0+
 - Swift 5+
 
 ### Installation
