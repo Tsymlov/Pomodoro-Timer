@@ -86,13 +86,13 @@ struct TimerView: View {
         }) {
             Text(goal.text)
                 .font(.body)
-                .foregroundColor(.primary)
+                .foregroundColor(Colors.primaryText)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)
                 .padding()
                 .background(
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.gray.opacity(0.1))
+                        .fill(Colors.goalBackground)
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
                                 .stroke(sessionColor, lineWidth: 1)
@@ -112,16 +112,16 @@ struct TimerView: View {
             VStack(spacing: 4) {
                 Image(systemName: "target")
                     .font(.title2)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Colors.secondaryText)
                 Text("Set a goal for this session")
                     .font(.body)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(Colors.secondaryText)
             }
             .frame(maxWidth: .infinity)
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(Color.gray.opacity(0.3), style: StrokeStyle(lineWidth: 1, dash: [5]))
+                    .stroke(Colors.goalBorderDashed, style: StrokeStyle(lineWidth: 1, dash: [5]))
             )
         }
         .buttonStyle(PlainButtonStyle())
@@ -135,20 +135,13 @@ struct TimerView: View {
             // Handle settings action
         }) {
             Image(systemName: "gearshape.fill")
-                .foregroundColor(.gray)
+                .foregroundColor(Colors.settingsIcon)
         }
     }
 
     // MARK: - Computed Properties
     private var sessionColor: Color {
-        switch store.currentSession {
-        case .pomodoro:
-            return .accent
-        case .shortBreak:
-            return .blue
-        case .longBreak:
-            return .purple
-        }
+        Colors.sessionColor(for: store.currentSession)
     }
 
     private var mainButtonIcon: String {
@@ -210,7 +203,7 @@ struct TimerCircleView: View {
     
     private var backgroundCircle: some View {
         Circle()
-            .stroke(Color.gray.opacity(0.2), lineWidth: lineWidth)
+            .stroke(Colors.timerCircleBackground, lineWidth: lineWidth)
             .frame(width: circleSize, height: circleSize)
     }
     
@@ -283,9 +276,9 @@ struct ControlButtonsView: View {
         Button(action: onReset) {
             Image(systemName: "arrow.counterclockwise")
                 .font(.title2)
-                .foregroundColor(.orange)
+                .foregroundColor(Colors.resetButton)
                 .frame(width: buttonSize, height: buttonSize)
-                .background(Color.orange.opacity(0.1))
+                .background(Colors.resetButtonBackground)
                 .clipShape(Circle())
         }
         .disabled(!canReset)
@@ -295,7 +288,7 @@ struct ControlButtonsView: View {
         Button(action: onMainAction) {
             Image(systemName: mainButtonIcon)
                 .font(.title)
-                .foregroundColor(.white)
+                .foregroundColor(Colors.mainButtonText)
                 .frame(width: mainButtonSize, height: mainButtonSize)
                 .background(sessionColor)
                 .clipShape(Circle())
@@ -308,9 +301,9 @@ struct ControlButtonsView: View {
         Button(action: onSkip) {
             Image(systemName: "forward.fill")
                 .font(.title2)
-                .foregroundColor(.blue)
+                .foregroundColor(Colors.skipButton)
                 .frame(width: buttonSize, height: buttonSize)
-                .background(Color.blue.opacity(0.1))
+                .background(Colors.skipButtonBackground)
                 .clipShape(Circle())
         }
     }
