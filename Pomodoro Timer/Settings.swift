@@ -17,19 +17,4 @@ struct Settings: Codable, Equatable {
     var soundEnabled: Bool = true
     var vibrateEnabled: Bool = true
 
-    static let userDefaultsKey = "Settings"
-
-    static func load() -> Settings {
-        guard let data = UserDefaults.standard.data(forKey: userDefaultsKey),
-              let settings = try? JSONDecoder().decode(Settings.self, from: data) else {
-            return Settings()
-        }
-        return settings
-    }
-
-    func save() {
-        if let data = try? JSONEncoder().encode(self) {
-            UserDefaults.standard.set(data, forKey: Self.userDefaultsKey)
-        }
-    }
 }

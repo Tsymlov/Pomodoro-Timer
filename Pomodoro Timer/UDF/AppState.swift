@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct AppState: Equatable {
+struct AppState: Equatable, Codable {
     var timerState: TimerState = .idle
     var currentSession: SessionType = .pomodoro
     var timeRemaining: TimeInterval = Constants.pomodoroDuration
@@ -20,6 +20,7 @@ struct AppState: Equatable {
     var allGoals: [SessionGoal] = []
     var sessionEndTime: Date?
     var backgroundTime: Date?
+    
 
     // MARK: - Computed Properties
     var progress: Double {

@@ -14,15 +14,16 @@ final class Store: ObservableObject {
 
     private let timer: TimerProtocol
     private var cancellables = Set<AnyCancellable>()
-    private let notificationManager = NotificationManager.shared
+    private let notifier = Notifier.shared
+    private let persistence = Persistence.shared
     private lazy var backgroundHandler = BackgroundHandler(store: self)
 
     // MARK: - Initialization
     init(timer: TimerProtocol = SystemTimer()) {
         self.timer = timer
         setupTimer()
-        loadSettings()
-        notificationManager.requestPermission()
+        loadState()
+        notifier.requestPermission()
         _ = backgroundHandler
     }
 
@@ -31,6 +32,10 @@ final class Store: ObservableObject {
         let previousState = state
         reducer(state: &state, action: action)
         handleSideEffects(previousState: previousState, action: action)
+        
+        // Save state with optimization for frequent updates
+        let shouldSaveImmediately = action.shouldSaveImmediately
+        persistence.saveAppState(state, immediately: shouldSaveImmediately)
     }
 
     // MARK: - Timer Setup
@@ -53,7 +58,7 @@ final class Store: ObservableObject {
 
         case .pause, .stop, .reset:
             timer.stop()
-            notificationManager.cancelAllNotifications()
+            notifier.cancelAllNotifications()
 
         case .complete, .updateBackgroundTime:
             // Check if session just completed
@@ -64,12 +69,12 @@ final class Store: ObservableObject {
         case .enterForeground:
             // Update notifications when returning from background if needed
             if state.timerState == .running {
-                notificationManager.cancelAllNotifications()
+                notifier.cancelAllNotifications()
                 scheduleNotificationForCurrentSession()
             }
 
         case .updateSettings:
-            state.settings.save()
+            persistence.saveSettings(state.settings)
 
         default:
             break
@@ -79,7 +84,7 @@ final class Store: ObservableObject {
     // MARK: - Session Management
     private func handleSessionCompletion() {
         timer.stop()
-        notificationManager.cancelAllNotifications()
+        notifier.cancelAllNotifications()
         scheduleCompletionNotification()
         scheduleAutoTransition()
     }
@@ -90,22 +95,28 @@ final class Store: ObservableObject {
         }
     }
     
-    // MARK: - Settings
-    private func loadSettings() {
-        let loadedSettings = Settings.load()
-        send(.updateSettings(loadedSettings))
+    // MARK: - State Management
+    private func loadState() {
+        // Try to load saved state, or use default with loaded settings
+        if let savedState = persistence.loadAppState() {
+            state = savedState
+        } else {
+            // Load just settings if no full state exists
+            state.settings = persistence.loadSettings()
+            state.timeRemaining = state.getCurrentSessionDuration()
+        }
     }
     
     // MARK: - Notifications
     private func scheduleNotificationForCurrentSession() {
-        notificationManager.scheduleNotification(
+        notifier.scheduleNotification(
             for: state.currentSession,
             in: state.timeRemaining
         )
     }
     
     private func scheduleCompletionNotification() {
-        notificationManager.scheduleNotification(
+        notifier.scheduleNotification(
             for: state.currentSession,
             in: 0.1
         )

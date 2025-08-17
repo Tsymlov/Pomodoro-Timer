@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct TimerStatistics: Equatable {
+struct TimerStatistics: Equatable, Codable {
     var completedPomodoros: Int = 0
     var completedShortBreaks: Int = 0
     var completedLongBreaks: Int = 0

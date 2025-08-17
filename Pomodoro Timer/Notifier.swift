@@ -8,8 +8,8 @@
 import Foundation
 import UserNotifications
 
-final class NotificationManager {
-    static let shared = NotificationManager()
+final class Notifier {
+    static let shared = Notifier()
 
     private init() {}
 

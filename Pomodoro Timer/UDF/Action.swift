@@ -28,3 +28,19 @@ enum Action: Equatable {
     case enterForeground
     case updateBackgroundTime
 }
+
+extension Action {
+    var shouldSaveImmediately: Bool {
+        switch self {
+        case .tick, .updateBackgroundTime:
+            // These happen frequently, use delayed save
+            return false
+        case .showGoalInput, .hideGoalInput:
+            // UI state changes, no need to save immediately
+            return false
+        default:
+            // Important state changes, save immediately
+            return true
+        }
+    }
+}
