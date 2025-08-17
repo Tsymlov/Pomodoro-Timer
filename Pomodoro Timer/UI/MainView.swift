@@ -15,4 +15,5 @@ struct MainView: View {
 
 #Preview {
     MainView()
+        .environmentObject(Store())
 }

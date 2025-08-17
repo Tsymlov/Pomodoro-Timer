@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TimerView: View {
-    @StateObject private var store = Store()
+    @EnvironmentObject var store: Store
     @State private var goalText = ""
     @State private var showingGoalInput = false
 
@@ -322,5 +322,6 @@ struct PlatformNavigationModifier: ViewModifier {
 struct TimerView_Previews: PreviewProvider {
     static var previews: some View {
         TimerView()
+            .environmentObject(Store())
     }
 }

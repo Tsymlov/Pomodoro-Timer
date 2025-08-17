@@ -13,8 +13,17 @@ import Cocoa
 
 @main
 struct Pomodoro_TimerApp: App {
+    @StateObject private var store: Store
+    #if os(macOS)
+    @StateObject private var menuBarController: MenuBarController
+    #endif
+    
     init() {
+        let storeInstance = Store()
+        self._store = StateObject(wrappedValue: storeInstance)
+        
         #if os(macOS)
+        self._menuBarController = StateObject(wrappedValue: MenuBarController(store: storeInstance))
         checkSingleInstance()
         #endif
     }
@@ -35,11 +44,29 @@ struct Pomodoro_TimerApp: App {
     var body: some Scene {
         WindowGroup {
             MainView()
+                .environmentObject(store)
+                #if os(macOS)
+                .onAppear {
+                    setupAppBehavior()
+                }
+                #endif
         }
         .modelContainer(sharedModelContainer)
+        #if os(macOS)
+        .windowStyle(.hiddenTitleBar)
+        .windowResizability(.contentSize)
+        #endif
     }
     
     #if os(macOS)
+    private func setupAppBehavior() {
+        // Keep app running even when window is closed
+        // This allows the menu bar to stay active
+        DispatchQueue.main.async {
+            NSApp.setActivationPolicy(.accessory)
+        }
+    }
+    
     private func checkSingleInstance() {
         let runningApps = NSWorkspace.shared.runningApplications
         let appBundleIdentifier = Bundle.main.bundleIdentifier ?? ""

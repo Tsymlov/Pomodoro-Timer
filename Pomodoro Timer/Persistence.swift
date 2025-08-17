@@ -36,10 +36,11 @@ final class Persistence {
             state.isGoalInputPresented = false
             state.backgroundTime = nil
             
-            // Reset timer if it was running
-            if state.timerState == .running || state.timerState == .completed {
+            // Reset timer if it was running, paused, or completed
+            if state.timerState == .running || state.timerState == .paused || state.timerState == .completed {
                 state.timerState = .idle
                 state.sessionEndTime = nil
+                state.timeRemaining = state.getCurrentSessionDuration()
             }
             
             return state
