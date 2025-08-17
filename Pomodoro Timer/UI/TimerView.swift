@@ -12,34 +12,35 @@ struct TimerView: View {
     @State private var goalText = ""
     @State private var showingGoalInput = false
 
+    // MARK: - Body
     var body: some View {
         VStack(spacing: 30) {
-            // Settings button in top-right corner
-            HStack {
-                Spacer()
-                settingsButton
-            }
-            .padding(.horizontal)
-
+            headerSection
             Spacer()
-
-            // MARK: - Main Timer Circle
             timerCircle
-
             Spacer()
-
-            // MARK: - Goal Section
             goalSection
-
-            // MARK: - Control Buttons
             controlButtons
-
             Spacer()
         }
         .padding()
         .sheet(isPresented: $showingGoalInput) {
-            goalInputSheet
+            GoalInputSheet(
+                goalText: $goalText,
+                isPresented: $showingGoalInput,
+                currentGoal: store.currentGoal,
+                onSave: { store.send(.setGoal(goalText)) }
+            )
         }
+    }
+    
+    // MARK: - Header Section
+    private var headerSection: some View {
+        HStack {
+            Spacer()
+            settingsButton
+        }
+        .padding(.horizontal)
     }
 
     // MARK: - Goal Section
@@ -55,82 +56,26 @@ struct TimerView: View {
 
     // MARK: - Timer Circle
     private var timerCircle: some View {
-        ZStack {
-            // Background circle
-            Circle()
-                .stroke(Color.gray.opacity(0.2), lineWidth: 12)
-                .frame(width: 280, height: 280)
-
-            // Progress circle
-            Circle()
-                .trim(from: 0, to: store.progress)
-                .stroke(
-                    sessionColor,
-                    style: StrokeStyle(lineWidth: 12, lineCap: .round)
-                )
-                .frame(width: 280, height: 280)
-                .rotationEffect(.degrees(-90))
-                .animation(.easeInOut, value: store.progress)
-
-            // Time display
-            VStack(spacing: 6) {
-
-                Text(store.formattedTime)
-                    .font(.system(size: 64, weight: .heavy))
-                    .foregroundColor(sessionColor)
-
-                // Pomodoro cycles display
-                if store.statistics.todayStats.completedPomodoros > 0 {
-                    Text(store.todayPomodorosCyclesDisplay)
-                        .font(.system(size: 16, weight: .heavy))
-                        .foregroundColor(sessionColor)
-                        .lineLimit(2)
-                        .multilineTextAlignment(.center)
-                        .frame(maxWidth: 200)
-                        .padding(.top, 10)
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .multilineTextAlignment(.center)
-        }
+        TimerCircleView(
+            progress: store.progress,
+            formattedTime: store.formattedTime,
+            sessionColor: sessionColor,
+            cyclesDisplay: store.todayPomodorosCyclesDisplay,
+            showCycles: store.statistics.todayStats.completedPomodoros > 0
+        )
     }
 
     // MARK: - Control Buttons
     private var controlButtons: some View {
-        HStack(spacing: 20) {
-            // Reset Button
-            Button(action: { store.send(.reset) }) {
-                Image(systemName: "arrow.counterclockwise")
-                    .font(.title2)
-                    .foregroundColor(.orange)
-                    .frame(width: 50, height: 50)
-                    .background(Color.orange.opacity(0.1))
-                    .clipShape(Circle())
-            }
-            .disabled(!store.canReset)
-
-            // Main Action Button
-            Button(action: mainButtonAction) {
-                Image(systemName: mainButtonIcon)
-                    .font(.title)
-                    .foregroundColor(.white)
-                    .frame(width: 80, height: 80)
-                    .background(sessionColor)
-                    .clipShape(Circle())
-                    .scaleEffect(store.timerState == .running ? 1.1 : 1.0)
-                    .animation(.easeInOut(duration: 0.2), value: store.timerState)
-            }
-
-            // Skip Button
-            Button(action: skipButtonAction) {
-                Image(systemName: "forward.fill")
-                    .font(.title2)
-                    .foregroundColor(.blue)
-                    .frame(width: 50, height: 50)
-                    .background(Color.blue.opacity(0.1))
-                    .clipShape(Circle())
-            }
-        }
+        ControlButtonsView(
+            canReset: store.canReset,
+            timerState: store.timerState,
+            sessionColor: sessionColor,
+            mainButtonIcon: mainButtonIcon,
+            onReset: { store.send(.reset) },
+            onMainAction: mainButtonAction,
+            onSkip: skipButtonAction
+        )
     }
 
     // MARK: - Goal Display
@@ -183,77 +128,6 @@ struct TimerView: View {
         .padding(.horizontal)
     }
 
-    // MARK: - Goal Input Sheet
-    private var goalInputSheet: some View {
-        VStack(spacing: 20) {
-            // Header with title and buttons
-            HStack {
-                Button("Cancel") {
-                    showingGoalInput = false
-                    goalText = ""
-                }
-                
-                Spacer()
-                
-                Text("Session Goal")
-                    .font(.headline)
-                
-                Spacer()
-                
-                Button("Save") {
-                    saveGoal()
-                }
-                .disabled(goalText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-            }
-            .padding()
-            
-            Text("What's your goal?")
-                .font(.title3)
-                .fontWeight(.medium)
-                .multilineTextAlignment(.center)
-                .padding(.top)
-
-#if os(iOS)
-            AutoFocusTextField(
-                text: $goalText,
-                placeholder: "Enter your goal...",
-                onCommit: saveGoal
-            )
-            .frame(height: 44)
-            .padding(.horizontal)
-#else
-            TextField("Enter your goal...", text: $goalText)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding(.horizontal)
-                .onSubmit {
-                    saveGoal()
-                }
-#endif
-
-            Spacer()
-        }
-        .padding()
-        .frame(minWidth: 400, minHeight: 200)
-        .onAppear {
-            goalText = store.currentGoal?.text ?? ""
-        }
-#if os(iOS)
-        .presentationDetents([.height(200)])
-#endif
-    }
-
-    private func saveGoal() {
-        guard !goalText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
-        store.send(.setGoal(goalText))
-        showingGoalInput = false
-        goalText = ""
-    }
-
-    private func cancelGoal() {
-        showingGoalInput = false
-        goalText = ""
-    }
-
     // MARK: - Settings Button
     private var settingsButton: some View {
         Button(action: {
@@ -287,6 +161,7 @@ struct TimerView: View {
         }
     }
 
+    // MARK: - Actions
     private func mainButtonAction() {
         switch store.timerState {
         case .idle, .completed:
@@ -305,6 +180,204 @@ struct TimerView: View {
         case .shortBreak, .longBreak:
             store.send(.skipToPomodoro)
         }
+    }
+}
+
+// MARK: - Timer Circle Component
+struct TimerCircleView: View {
+    let progress: Double
+    let formattedTime: String
+    let sessionColor: Color
+    let cyclesDisplay: String
+    let showCycles: Bool
+    
+    private let circleSize: CGFloat = 280
+    private let lineWidth: CGFloat = 12
+    
+    var body: some View {
+        ZStack {
+            backgroundCircle
+            progressCircle
+            timeDisplay
+        }
+    }
+    
+    private var backgroundCircle: some View {
+        Circle()
+            .stroke(Color.gray.opacity(0.2), lineWidth: lineWidth)
+            .frame(width: circleSize, height: circleSize)
+    }
+    
+    private var progressCircle: some View {
+        Circle()
+            .trim(from: 0, to: progress)
+            .stroke(
+                sessionColor,
+                style: StrokeStyle(lineWidth: lineWidth, lineCap: .round)
+            )
+            .frame(width: circleSize, height: circleSize)
+            .rotationEffect(.degrees(-90))
+            .animation(.easeInOut, value: progress)
+    }
+    
+    private var timeDisplay: some View {
+        VStack(spacing: 6) {
+            Text(formattedTime)
+                .font(.system(size: 64, weight: .heavy))
+                .foregroundColor(sessionColor)
+            
+            if showCycles {
+                Text(cyclesDisplay)
+                    .font(.system(size: 16, weight: .heavy))
+                    .foregroundColor(sessionColor)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.center)
+                    .frame(maxWidth: 200)
+                    .padding(.top, 10)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .multilineTextAlignment(.center)
+    }
+}
+
+// MARK: - Control Buttons Component
+struct ControlButtonsView: View {
+    let canReset: Bool
+    let timerState: TimerState
+    let sessionColor: Color
+    let mainButtonIcon: String
+    let onReset: () -> Void
+    let onMainAction: () -> Void
+    let onSkip: () -> Void
+    
+    var body: some View {
+        HStack(spacing: 20) {
+            resetButton
+            mainActionButton
+            skipButton
+        }
+    }
+    
+    private var resetButton: some View {
+        Button(action: onReset) {
+            Image(systemName: "arrow.counterclockwise")
+                .font(.title2)
+                .foregroundColor(.orange)
+                .frame(width: 50, height: 50)
+                .background(Color.orange.opacity(0.1))
+                .clipShape(Circle())
+        }
+        .disabled(!canReset)
+    }
+    
+    private var mainActionButton: some View {
+        Button(action: onMainAction) {
+            Image(systemName: mainButtonIcon)
+                .font(.title)
+                .foregroundColor(.white)
+                .frame(width: 80, height: 80)
+                .background(sessionColor)
+                .clipShape(Circle())
+                .scaleEffect(timerState == .running ? 1.1 : 1.0)
+                .animation(.easeInOut(duration: 0.2), value: timerState)
+        }
+    }
+    
+    private var skipButton: some View {
+        Button(action: onSkip) {
+            Image(systemName: "forward.fill")
+                .font(.title2)
+                .foregroundColor(.blue)
+                .frame(width: 50, height: 50)
+                .background(Color.blue.opacity(0.1))
+                .clipShape(Circle())
+        }
+    }
+}
+
+// MARK: - Goal Input Sheet Component
+struct GoalInputSheet: View {
+    @Binding var goalText: String
+    @Binding var isPresented: Bool
+    let currentGoal: SessionGoal?
+    let onSave: () -> Void
+    
+    var body: some View {
+        VStack(spacing: 20) {
+            headerView
+            questionText
+            inputField
+            Spacer()
+        }
+        .padding()
+        .frame(minWidth: 400, minHeight: 200)
+        .onAppear {
+            goalText = currentGoal?.text ?? ""
+        }
+#if os(iOS)
+        .presentationDetents([.height(200)])
+#endif
+    }
+    
+    private var headerView: some View {
+        HStack {
+            Button("Cancel") {
+                isPresented = false
+                goalText = ""
+            }
+            
+            Spacer()
+            
+            Text("Session Goal")
+                .font(.headline)
+            
+            Spacer()
+            
+            Button("Save") {
+                guard !goalText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+                onSave()
+                isPresented = false
+                goalText = ""
+            }
+            .disabled(goalText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+        }
+        .padding()
+    }
+    
+    private var questionText: some View {
+        Text("What's your goal?")
+            .font(.title3)
+            .fontWeight(.medium)
+            .multilineTextAlignment(.center)
+            .padding(.top)
+    }
+    
+    private var inputField: some View {
+#if os(iOS)
+        AutoFocusTextField(
+            text: $goalText,
+            placeholder: "Enter your goal...",
+            onCommit: {
+                guard !goalText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+                onSave()
+                isPresented = false
+                goalText = ""
+            }
+        )
+        .frame(height: 44)
+        .padding(.horizontal)
+#else
+        TextField("Enter your goal...", text: $goalText)
+            .textFieldStyle(RoundedBorderTextFieldStyle())
+            .padding(.horizontal)
+            .onSubmit {
+                guard !goalText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
+                onSave()
+                isPresented = false
+                goalText = ""
+            }
+#endif
     }
 }
 
