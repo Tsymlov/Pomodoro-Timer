@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import SwiftData
 #if os(macOS)
 import Cocoa
 #endif
@@ -28,19 +27,6 @@ struct Pomodoro_TimerApp: App {
         #endif
     }
     
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
-
-        do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
-        } catch {
-            fatalError("Could not create ModelContainer: \(error)")
-        }
-    }()
-
     var body: some Scene {
         WindowGroup {
             MainView()
@@ -51,7 +37,6 @@ struct Pomodoro_TimerApp: App {
                 }
                 #endif
         }
-        .modelContainer(sharedModelContainer)
         #if os(macOS)
         .windowStyle(.hiddenTitleBar)
         .windowResizability(.contentSize)
