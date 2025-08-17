@@ -121,9 +121,6 @@ final class MenuBarController: ObservableObject {
         addWindowControl(to: menu)
         menu.addItem(.separator())
         
-        addStatistics(to: menu)
-        menu.addItem(.separator())
-        
         addQuitItem(to: menu)
         
         // Set target for all action items
@@ -173,14 +170,6 @@ final class MenuBarController: ObservableObject {
     
     private func addWindowControl(to menu: NSMenu) {
         menu.addItem(NSMenuItem(title: "Show Window", action: #selector(showMainWindow), keyEquivalent: ""))
-    }
-    
-    private func addStatistics(to menu: NSMenu) {
-        let todayStats = store.todayStats
-        let statsText = "Today: \(todayStats.completedPomodoros) pomodoros"
-        let statsItem = NSMenuItem(title: statsText, action: nil, keyEquivalent: "")
-        statsItem.isEnabled = false
-        menu.addItem(statsItem)
     }
     
     private func addQuitItem(to menu: NSMenu) {
