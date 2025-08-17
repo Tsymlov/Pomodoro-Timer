@@ -79,6 +79,12 @@ func reducer(state: inout AppState, action: Action) {
             state.currentSessionStartTime = nil
         }
 
+    case .startShortBreak:
+        startBreakSession(state: &state, sessionType: .shortBreak)
+
+    case .startLongBreak:
+        startBreakSession(state: &state, sessionType: .longBreak)
+
     case .updateSettings(let newSettings):
         state.settings = newSettings
 
@@ -162,6 +168,16 @@ private func moveToNextSession(state: inout AppState) {
 }
 
 // MARK: - Helper Functions
+
+private func startBreakSession(state: inout AppState, sessionType: SessionType) {
+    guard state.timerState == .idle else { return }
+    
+    state.currentSession = sessionType
+    state.timeRemaining = state.getCurrentSessionDuration()
+    state.timerState = .running
+    state.currentSessionStartTime = Date()
+    state.sessionEndTime = Date().addingTimeInterval(state.timeRemaining)
+}
 
 private func updateTimerProgress(state: inout AppState) {
     guard state.timerState == .running, let endTime = state.sessionEndTime else { return }

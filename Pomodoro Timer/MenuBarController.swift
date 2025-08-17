@@ -144,6 +144,11 @@ final class MenuBarController: ObservableObject {
     }
     
     private func addTimerControls(to menu: NSMenu) {
+        addMainTimerControls(to: menu)
+        addBreakOptions(to: menu)
+    }
+    
+    private func addMainTimerControls(to menu: NSMenu) {
         if store.canStart {
             let title = store.timerState == .paused ? "Resume Timer" : "Start Timer"
             menu.addItem(NSMenuItem(title: title, action: #selector(startTimer), keyEquivalent: "s"))
@@ -156,6 +161,14 @@ final class MenuBarController: ObservableObject {
         if store.canReset {
             menu.addItem(NSMenuItem(title: "Reset Timer", action: #selector(resetTimer), keyEquivalent: "r"))
         }
+    }
+    
+    private func addBreakOptions(to menu: NSMenu) {
+        guard store.timerState == .idle else { return }
+        
+        menu.addItem(.separator())
+        menu.addItem(NSMenuItem(title: "Start Short Break", action: #selector(startShortBreak), keyEquivalent: ""))
+        menu.addItem(NSMenuItem(title: "Start Long Break", action: #selector(startLongBreak), keyEquivalent: ""))
     }
     
     private func addWindowControl(to menu: NSMenu) {
@@ -217,6 +230,18 @@ final class MenuBarController: ObservableObject {
     @objc private func resetTimer() {
         Task { @MainActor in
             store.send(.reset)
+        }
+    }
+    
+    @objc private func startShortBreak() {
+        Task { @MainActor in
+            store.send(.startShortBreak)
+        }
+    }
+    
+    @objc private func startLongBreak() {
+        Task { @MainActor in
+            store.send(.startLongBreak)
         }
     }
     

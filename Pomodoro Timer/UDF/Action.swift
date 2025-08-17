@@ -18,6 +18,8 @@ enum Action: Equatable {
     case skipToBreak
     case skipToPomodoro
     case moveToNextSession
+    case startShortBreak
+    case startLongBreak
     case updateSettings(Settings)
     case setDailyGoal(Int)
     case resetDailyStatistics
