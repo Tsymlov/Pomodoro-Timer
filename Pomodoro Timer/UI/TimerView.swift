@@ -14,7 +14,7 @@ struct TimerView: View {
 
     // MARK: - Body
     var body: some View {
-        VStack(spacing: 30) {
+        VStack(spacing: 20) {
             headerSection
             Spacer()
             timerCircle
@@ -23,7 +23,8 @@ struct TimerView: View {
             controlButtons
             Spacer()
         }
-        .padding()
+        .padding(.horizontal, 15)
+        .padding(.vertical, 10)
         .sheet(isPresented: $showingGoalInput) {
             GoalInputSheet(
                 goalText: $goalText,
@@ -191,8 +192,8 @@ struct TimerCircleView: View {
     let cyclesDisplay: String
     let showCycles: Bool
     
-    private let circleSize: CGFloat = 280
-    private let lineWidth: CGFloat = 12
+    private let circleSize: CGFloat = 220
+    private let lineWidth: CGFloat = 10
     
     var body: some View {
         ZStack {
@@ -223,7 +224,7 @@ struct TimerCircleView: View {
     private var timeDisplay: some View {
         VStack(spacing: 6) {
             Text(formattedTime)
-                .font(.system(size: 64, weight: .heavy))
+                .font(.system(size: 48, weight: .heavy))
                 .foregroundColor(sessionColor)
             
             if showCycles {
@@ -264,7 +265,7 @@ struct ControlButtonsView: View {
             Image(systemName: "arrow.counterclockwise")
                 .font(.title2)
                 .foregroundColor(.orange)
-                .frame(width: 50, height: 50)
+                .frame(width: 44, height: 44)
                 .background(Color.orange.opacity(0.1))
                 .clipShape(Circle())
         }
@@ -276,7 +277,7 @@ struct ControlButtonsView: View {
             Image(systemName: mainButtonIcon)
                 .font(.title)
                 .foregroundColor(.white)
-                .frame(width: 80, height: 80)
+                .frame(width: 70, height: 70)
                 .background(sessionColor)
                 .clipShape(Circle())
                 .scaleEffect(timerState == .running ? 1.1 : 1.0)
@@ -289,7 +290,7 @@ struct ControlButtonsView: View {
             Image(systemName: "forward.fill")
                 .font(.title2)
                 .foregroundColor(.blue)
-                .frame(width: 50, height: 50)
+                .frame(width: 44, height: 44)
                 .background(Color.blue.opacity(0.1))
                 .clipShape(Circle())
         }

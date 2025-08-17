@@ -32,6 +32,8 @@ struct Pomodoro_TimerApp: App {
             MainView()
                 .environmentObject(store)
                 #if os(macOS)
+                .frame(minWidth: 380, idealWidth: 380, maxWidth: 380,
+                       minHeight: 480, idealHeight: 480, maxHeight: 480)
                 .onAppear {
                     setupAppBehavior()
                 }
@@ -40,6 +42,7 @@ struct Pomodoro_TimerApp: App {
         #if os(macOS)
         .windowStyle(.hiddenTitleBar)
         .windowResizability(.contentSize)
+        .defaultSize(width: 380, height: 480)
         #endif
     }
     
