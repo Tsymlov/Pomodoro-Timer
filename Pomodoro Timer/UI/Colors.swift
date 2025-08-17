@@ -12,33 +12,35 @@ enum Colors {
     static let pomodoro = Color.accent
     static let shortBreak = Color.blue
     static let longBreak = Color.purple
-    
+
     // MARK: - Button Colors
     static let resetButton = Color.orange
     static let resetButtonBackground = Color.orange.opacity(0.1)
     static let skipButton = Color.blue
     static let skipButtonBackground = Color.blue.opacity(0.1)
     static let mainButtonText = Color.white
-    
+
     // MARK: - UI Elements
     static let settingsIcon = Color.gray
     static let timerCircleBackground = Color.gray.opacity(0.2)
     static let goalBackground = Color.gray.opacity(0.1)
     static let goalBorderDashed = Color.gray.opacity(0.3)
-    
+
     // MARK: - Text Colors
     static let primaryText = Color.primary
     static let secondaryText = Color.secondary
-    
+
+}
     // MARK: - Session Color Helper
-    static func sessionColor(for session: SessionType) -> Color {
-        switch session {
+extension SessionType {
+    var color: Color {
+        switch self {
         case .pomodoro:
-            return pomodoro
+            return Colors.pomodoro
         case .shortBreak:
-            return shortBreak
+            return Colors.shortBreak
         case .longBreak:
-            return longBreak
+            return Colors.longBreak
         }
     }
 }

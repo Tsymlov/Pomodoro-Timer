@@ -60,7 +60,7 @@ struct TimerView: View {
         TimerCircleView(
             progress: store.progress,
             formattedTime: store.formattedTime,
-            sessionColor: sessionColor,
+            sessionColor: store.currentSession.color,
             cyclesDisplay: store.todayPomodorosCyclesDisplay,
             showCycles: store.statistics.todayStats.completedPomodoros > 0
         )
@@ -71,7 +71,7 @@ struct TimerView: View {
         ControlButtonsView(
             canReset: store.canReset,
             timerState: store.timerState,
-            sessionColor: sessionColor,
+            sessionColor: store.currentSession.color,
             mainButtonIcon: mainButtonIcon,
             onReset: { store.send(.reset) },
             onMainAction: mainButtonAction,
@@ -95,7 +95,7 @@ struct TimerView: View {
                         .fill(Colors.goalBackground)
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
-                                .stroke(sessionColor, lineWidth: 1)
+                                .stroke(store.currentSession.color, lineWidth: 1)
                         )
                 )
         }
@@ -140,9 +140,6 @@ struct TimerView: View {
     }
 
     // MARK: - Computed Properties
-    private var sessionColor: Color {
-        Colors.sessionColor(for: store.currentSession)
-    }
 
     private var mainButtonIcon: String {
         switch store.timerState {
