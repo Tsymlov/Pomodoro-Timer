@@ -13,35 +13,32 @@ struct TimerView: View {
     @State private var showingGoalInput = false
 
     var body: some View {
-        NavigationView {
-            VStack(spacing: 30) {
-
+        VStack(spacing: 30) {
+            // Settings button in top-right corner
+            HStack {
                 Spacer()
-
-                // MARK: - Main Timer Circle
-                timerCircle
-
-                Spacer()
-
-                // MARK: - Goal Section
-                goalSection
-
-                // MARK: - Control Buttons
-                controlButtons
-
-                Spacer()
+                settingsButton
             }
-            .padding()
-            .navigationTitle(store.currentSession.title)
-            .modifier(PlatformNavigationModifier())
-            .toolbar {
-                ToolbarItem(placement: .primaryAction) {
-                    settingsButton
-                }
-            }
-            .sheet(isPresented: $showingGoalInput) {
-                goalInputSheet
-            }
+            .padding(.horizontal)
+
+            Spacer()
+
+            // MARK: - Main Timer Circle
+            timerCircle
+
+            Spacer()
+
+            // MARK: - Goal Section
+            goalSection
+
+            // MARK: - Control Buttons
+            controlButtons
+
+            Spacer()
+        }
+        .padding()
+        .sheet(isPresented: $showingGoalInput) {
+            goalInputSheet
         }
     }
 
@@ -188,51 +185,55 @@ struct TimerView: View {
 
     // MARK: - Goal Input Sheet
     private var goalInputSheet: some View {
-        NavigationView {
-            VStack(spacing: 20) {
-                Text("What's your goal?")
-                    .font(.title3)
-                    .fontWeight(.medium)
-                    .multilineTextAlignment(.center)
-                    .padding(.top)
-
-#if os(iOS)
-                AutoFocusTextField(
-                    text: $goalText,
-                    placeholder: "Enter your goal...",
-                    onCommit: saveGoal
-                )
-                .frame(height: 44)
-                .padding(.horizontal)
-#else
-                TextField("Enter your goal...", text: $goalText)
-                    .textFieldStyle(RoundedBorderTextFieldStyle())
-                    .padding(.horizontal)
-#endif
-
+        VStack(spacing: 20) {
+            // Header with title and buttons
+            HStack {
+                Button("Cancel") {
+                    showingGoalInput = false
+                    goalText = ""
+                }
+                
                 Spacer()
+                
+                Text("Session Goal")
+                    .font(.headline)
+                
+                Spacer()
+                
+                Button("Save") {
+                    saveGoal()
+                }
+                .disabled(goalText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
             .padding()
-            .navigationTitle("Session Goal")
-            .modifier(PlatformNavigationModifier())
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        showingGoalInput = false
-                        goalText = ""
-                    }
-                }
+            
+            Text("What's your goal?")
+                .font(.title3)
+                .fontWeight(.medium)
+                .multilineTextAlignment(.center)
+                .padding(.top)
 
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        store.send(.setGoal(goalText))
-                        showingGoalInput = false
-                        goalText = ""
-                    }
-                    .disabled(goalText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+#if os(iOS)
+            AutoFocusTextField(
+                text: $goalText,
+                placeholder: "Enter your goal...",
+                onCommit: saveGoal
+            )
+            .frame(height: 44)
+            .padding(.horizontal)
+#else
+            TextField("Enter your goal...", text: $goalText)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding(.horizontal)
+                .onSubmit {
+                    saveGoal()
                 }
-            }
+#endif
+
+            Spacer()
         }
+        .padding()
+        .frame(minWidth: 400, minHeight: 200)
         .onAppear {
             goalText = store.currentGoal?.text ?? ""
         }
@@ -304,17 +305,6 @@ struct TimerView: View {
         case .shortBreak, .longBreak:
             store.send(.skipToPomodoro)
         }
-    }
-}
-
-// MARK: - Platform Navigation Modifier
-struct PlatformNavigationModifier: ViewModifier {
-    func body(content: Content) -> some View {
-        #if os(iOS)
-            content.navigationBarTitleDisplayMode(.inline)
-        #else
-            content
-        #endif
     }
 }
 
