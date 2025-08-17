@@ -192,8 +192,13 @@ struct TimerCircleView: View {
     let cyclesDisplay: String
     let showCycles: Bool
     
-    private let circleSize: CGFloat = 220
+    #if os(iOS)
+    private let circleSize: CGFloat = 280
+    private let lineWidth: CGFloat = 12
+    #else
+    private let circleSize: CGFloat = 200
     private let lineWidth: CGFloat = 10
+    #endif
     
     var body: some View {
         ZStack {
@@ -224,7 +229,11 @@ struct TimerCircleView: View {
     private var timeDisplay: some View {
         VStack(spacing: 6) {
             Text(formattedTime)
-                .font(.system(size: 48, weight: .heavy))
+                #if os(iOS)
+                .font(.system(size: 64, weight: .heavy))
+                #else
+                .font(.system(size: 42, weight: .heavy))
+                #endif
                 .foregroundColor(sessionColor)
             
             if showCycles {
@@ -252,8 +261,18 @@ struct ControlButtonsView: View {
     let onMainAction: () -> Void
     let onSkip: () -> Void
     
+    #if os(iOS)
+    private let buttonSize: CGFloat = 50
+    private let mainButtonSize: CGFloat = 80
+    private let buttonSpacing: CGFloat = 20
+    #else
+    private let buttonSize: CGFloat = 40
+    private let mainButtonSize: CGFloat = 64
+    private let buttonSpacing: CGFloat = 16
+    #endif
+    
     var body: some View {
-        HStack(spacing: 20) {
+        HStack(spacing: buttonSpacing) {
             resetButton
             mainActionButton
             skipButton
@@ -265,7 +284,7 @@ struct ControlButtonsView: View {
             Image(systemName: "arrow.counterclockwise")
                 .font(.title2)
                 .foregroundColor(.orange)
-                .frame(width: 44, height: 44)
+                .frame(width: buttonSize, height: buttonSize)
                 .background(Color.orange.opacity(0.1))
                 .clipShape(Circle())
         }
@@ -277,7 +296,7 @@ struct ControlButtonsView: View {
             Image(systemName: mainButtonIcon)
                 .font(.title)
                 .foregroundColor(.white)
-                .frame(width: 70, height: 70)
+                .frame(width: mainButtonSize, height: mainButtonSize)
                 .background(sessionColor)
                 .clipShape(Circle())
                 .scaleEffect(timerState == .running ? 1.1 : 1.0)
@@ -290,7 +309,7 @@ struct ControlButtonsView: View {
             Image(systemName: "forward.fill")
                 .font(.title2)
                 .foregroundColor(.blue)
-                .frame(width: 44, height: 44)
+                .frame(width: buttonSize, height: buttonSize)
                 .background(Color.blue.opacity(0.1))
                 .clipShape(Circle())
         }
