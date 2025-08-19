@@ -83,17 +83,12 @@ final class Store: ObservableObject {
 
     // MARK: - Session Management
     private func handleSessionCompletion() {
-        timer.stop()
+        // Don't stop timer - let it continue for overtime display
         notifier.cancelAllNotifications()
         scheduleCompletionNotification()
-        scheduleAutoTransition()
+        // Don't auto-transition - let user see overtime
     }
     
-    private func scheduleAutoTransition() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-            self?.send(.moveToNextSession)
-        }
-    }
     
     // MARK: - State Management
     private func loadState() {

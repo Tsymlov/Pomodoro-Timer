@@ -24,13 +24,27 @@ struct AppState: Equatable, Codable {
 
     // MARK: - Computed Properties
     var progress: Double {
+        // Show full circle when completed
+        if timerState == .completed {
+            return 1.0
+        }
+        
         let totalTime = getCurrentSessionDuration()
         return totalTime > 0 ? (totalTime - timeRemaining) / totalTime : 0
     }
 
     var formattedTime: String {
-        let minutes = Int(timeRemaining) / 60
-        let seconds = Int(timeRemaining) % 60
+        // Show overtime after session completion
+        if timerState == .completed, let startTime = currentSessionStartTime {
+            let elapsedTime = Date().timeIntervalSince(startTime)
+            let minutes = Int(elapsedTime) / 60
+            let seconds = Int(elapsedTime) % 60
+            return String(format: "%02d:%02d", minutes, seconds)
+        }
+        
+        // Normal countdown display
+        let minutes = Int(abs(timeRemaining)) / 60
+        let seconds = Int(abs(timeRemaining)) % 60
         return String(format: "%02d:%02d", minutes, seconds)
     }
 

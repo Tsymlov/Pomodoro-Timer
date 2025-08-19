@@ -180,18 +180,21 @@ private func startBreakSession(state: inout AppState, sessionType: SessionType) 
 }
 
 private func updateTimerProgress(state: inout AppState) {
-    guard state.timerState == .running, let endTime = state.sessionEndTime else { return }
+    // Allow updates in both running and completed states
+    guard state.timerState == .running || state.timerState == .completed,
+          let endTime = state.sessionEndTime else { return }
     
     let now = Date()
     
-    if now >= endTime {
-        // Session completed
+    if state.timerState == .running && now >= endTime {
+        // Session just completed
         recordCurrentSession(state: &state, wasCompleted: true)
         updateStatisticsForCompletion(state: &state)
         state.timerState = .completed
         state.timeRemaining = 0
-    } else {
-        // Update remaining time based on system time
+    } else if state.timerState == .running {
+        // Update remaining time during countdown
         state.timeRemaining = endTime.timeIntervalSince(now)
     }
+    // In completed state, formattedTime will calculate elapsed time from startTime
 }
