@@ -26,7 +26,7 @@ enum Colors {
     
     // MARK: - Background Colors
     #if os(macOS)
-    static let appBackground = Color(NSColor.windowBackgroundColor)
+    static let appBackground = Color(NSColor.textBackgroundColor)
     #else
     static let appBackground = Color(UIColor.systemBackground)
     #endif
