@@ -88,9 +88,12 @@ final class MenuBarController: ObservableObject {
     private func updateTitle(for button: NSStatusBarButton) {
         // Show time for all states except completed
         if store.timerState != .completed {
-            button.title = " \(store.formattedTime)"
+            let attributes: [NSAttributedString.Key: Any] = [
+                .font: NSFont.monospacedDigitSystemFont(ofSize: NSFont.systemFontSize, weight: .regular)
+            ]
+            button.attributedTitle = NSAttributedString(string: " \(store.formattedTime)", attributes: attributes)
         } else {
-            button.title = ""
+            button.attributedTitle = NSAttributedString(string: "")
         }
     }
     
