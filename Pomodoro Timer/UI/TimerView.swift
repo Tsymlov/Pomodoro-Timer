@@ -25,6 +25,8 @@ struct TimerView: View {
         }
         .padding(.horizontal, 15)
         .padding(.vertical, 10)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Colors.appBackground)
         .sheet(isPresented: $showingGoalInput) {
             GoalInputSheet(
                 goalText: $goalText,

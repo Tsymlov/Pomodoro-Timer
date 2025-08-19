@@ -23,6 +23,13 @@ enum Colors {
     // MARK: - Text Colors
     static let primaryText = Color.primary
     static let secondaryText = Color.secondary
+    
+    // MARK: - Background Colors
+    #if os(macOS)
+    static let appBackground = Color(NSColor.windowBackgroundColor)
+    #else
+    static let appBackground = Color(UIColor.systemBackground)
+    #endif
 
 }
     // MARK: - Session Color Helper
