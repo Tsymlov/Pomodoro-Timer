@@ -222,9 +222,9 @@ struct TimerCircleView: View {
         VStack(spacing: 6) {
             Text(formattedTime)
                 #if os(iOS)
-                .font(.system(size: 64, weight: .heavy))
+                .font(.system(size: 64, weight: .heavy).monospacedDigit())
                 #else
-                .font(.system(size: 42, weight: .heavy))
+                .font(.system(size: 42, weight: .heavy).monospacedDigit())
                 #endif
                 .foregroundColor(sessionColor)
             
