@@ -15,12 +15,12 @@ import AppKit
 @MainActor
 final class BackgroundHandler {
     private weak var store: Store?
-    
+
     init(store: Store) {
         self.store = store
         setupObservers()
     }
-    
+
     private func setupObservers() {
 #if os(iOS)
         NotificationCenter.default.addObserver(
@@ -64,7 +64,7 @@ final class BackgroundHandler {
         }
 #endif
     }
-    
+
     deinit {
 #if os(iOS) || os(macOS)
         NotificationCenter.default.removeObserver(self)

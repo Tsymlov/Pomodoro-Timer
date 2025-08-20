@@ -36,7 +36,7 @@ struct TimerView: View {
             )
         }
     }
-    
+
     // MARK: - Header Section
     private var headerSection: some View {
         HStack {
@@ -183,7 +183,7 @@ struct TimerCircleView: View {
     let sessionColor: Color
     let cyclesDisplay: String
     let showCycles: Bool
-    
+
     #if os(iOS)
     private let circleSize: CGFloat = 280
     private let lineWidth: CGFloat = 12
@@ -191,7 +191,7 @@ struct TimerCircleView: View {
     private let circleSize: CGFloat = 200
     private let lineWidth: CGFloat = 10
     #endif
-    
+
     var body: some View {
         ZStack {
             backgroundCircle
@@ -199,13 +199,13 @@ struct TimerCircleView: View {
             timeDisplay
         }
     }
-    
+
     private var backgroundCircle: some View {
         Circle()
             .stroke(sessionColor.opacity(0.2), lineWidth: lineWidth)
             .frame(width: circleSize, height: circleSize)
     }
-    
+
     private var progressCircle: some View {
         Circle()
             .trim(from: 0, to: progress)
@@ -217,7 +217,7 @@ struct TimerCircleView: View {
             .rotationEffect(.degrees(-90))
             .animation(.easeInOut, value: progress)
     }
-    
+
     private var timeDisplay: some View {
         VStack(spacing: 6) {
             Text(formattedTime)
@@ -227,7 +227,7 @@ struct TimerCircleView: View {
                 .font(.system(size: 42, weight: .heavy).monospacedDigit())
                 #endif
                 .foregroundColor(sessionColor)
-            
+
             if showCycles {
                 Text(cyclesDisplay)
                     .font(.system(size: 16, weight: .heavy))
@@ -252,7 +252,7 @@ struct ControlButtonsView: View {
     let onReset: () -> Void
     let onMainAction: () -> Void
     let onSkip: () -> Void
-    
+
     #if os(iOS)
     private let buttonSize: CGFloat = 50
     private let mainButtonSize: CGFloat = 80
@@ -262,7 +262,7 @@ struct ControlButtonsView: View {
     private let mainButtonSize: CGFloat = 64
     private let buttonSpacing: CGFloat = 16
     #endif
-    
+
     var body: some View {
         HStack(spacing: buttonSpacing) {
             resetButton
@@ -270,7 +270,7 @@ struct ControlButtonsView: View {
             skipButton
         }
     }
-    
+
     private var resetButton: some View {
         Button(action: onReset) {
             Image(systemName: "arrow.counterclockwise")
@@ -282,7 +282,7 @@ struct ControlButtonsView: View {
         }
         .disabled(!canReset)
     }
-    
+
     private var mainActionButton: some View {
         Button(action: onMainAction) {
             Image(systemName: mainButtonIcon)
@@ -295,7 +295,7 @@ struct ControlButtonsView: View {
                 .animation(.easeInOut(duration: 0.2), value: timerState)
         }
     }
-    
+
     private var skipButton: some View {
         Button(action: onSkip) {
             Image(systemName: "forward.fill")
@@ -314,7 +314,7 @@ struct GoalInputSheet: View {
     @Binding var isPresented: Bool
     let currentGoal: SessionGoal?
     let onSave: () -> Void
-    
+
     var body: some View {
         VStack(spacing: 20) {
             headerView
@@ -331,21 +331,21 @@ struct GoalInputSheet: View {
         .presentationDetents([.height(200)])
 #endif
     }
-    
+
     private var headerView: some View {
         HStack {
             Button("Cancel") {
                 isPresented = false
                 goalText = ""
             }
-            
+
             Spacer()
-            
+
             Text("Session Goal")
                 .font(.headline)
-            
+
             Spacer()
-            
+
             Button("Save") {
                 guard !goalText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
                 onSave()
@@ -356,7 +356,7 @@ struct GoalInputSheet: View {
         }
         .padding()
     }
-    
+
     private var questionText: some View {
         Text("What's your goal?")
             .font(.title3)
@@ -364,7 +364,7 @@ struct GoalInputSheet: View {
             .multilineTextAlignment(.center)
             .padding(.top)
     }
-    
+
     private var inputField: some View {
 #if os(iOS)
         AutoFocusTextField(

@@ -43,11 +43,11 @@ func reducer(state: inout AppState, action: Action) {
 
     case .enterForeground:
         guard state.backgroundTime != nil else { return }
-        
+
         if state.timerState == .running {
             updateTimerProgress(state: &state)
         }
-        
+
         state.backgroundTime = nil
 
     case .updateBackgroundTime, .tick:
@@ -171,7 +171,7 @@ private func moveToNextSession(state: inout AppState) {
 
 private func startBreakSession(state: inout AppState, sessionType: SessionType) {
     guard state.timerState == .idle else { return }
-    
+
     state.currentSession = sessionType
     state.timeRemaining = state.getCurrentSessionDuration()
     state.timerState = .running
@@ -183,9 +183,9 @@ private func updateTimerProgress(state: inout AppState) {
     // Allow updates in both running and completed states
     guard state.timerState == .running || state.timerState == .completed,
           let endTime = state.sessionEndTime else { return }
-    
+
     let now = Date()
-    
+
     if state.timerState == .running && now >= endTime {
         // Session just completed
         recordCurrentSession(state: &state, wasCompleted: true)

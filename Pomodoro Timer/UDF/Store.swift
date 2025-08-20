@@ -32,7 +32,7 @@ final class Store: ObservableObject {
         let previousState = state
         reducer(state: &state, action: action)
         handleSideEffects(previousState: previousState, action: action)
-        
+
         // Save state with optimization for frequent updates
         let shouldSaveImmediately = action.shouldSaveImmediately
         persistence.saveAppState(state, immediately: shouldSaveImmediately)
@@ -88,8 +88,7 @@ final class Store: ObservableObject {
         scheduleCompletionNotification()
         // Don't auto-transition - let user see overtime
     }
-    
-    
+
     // MARK: - State Management
     private func loadState() {
         // Try to load saved state, or use default with loaded settings
@@ -101,7 +100,7 @@ final class Store: ObservableObject {
             state.timeRemaining = state.getCurrentSessionDuration()
         }
     }
-    
+
     // MARK: - Notifications
     private func scheduleNotificationForCurrentSession() {
         notifier.scheduleNotification(
@@ -109,14 +108,13 @@ final class Store: ObservableObject {
             in: state.timeRemaining
         )
     }
-    
+
     private func scheduleCompletionNotification() {
         notifier.scheduleNotification(
             for: state.currentSession,
             in: 0.1
         )
     }
-
 
     // MARK: - Convenience Getters
     var timerState: TimerState { state.timerState }
@@ -131,7 +129,7 @@ final class Store: ObservableObject {
     var canReset: Bool { state.canReset }
     var settings: Settings { state.settings }
     var allGoals: [SessionGoal] { state.allGoals }
-    
+
     // MARK: - Analytics Access
     var todayStats: DailyStats { state.statistics.todayStats }
     var last7DaysStats: [DailyStats] { state.statistics.last7DaysStats }
@@ -142,15 +140,15 @@ final class Store: ObservableObject {
     var sessionHistory: [SessionRecord] { state.statistics.sessionHistory }
     var currentGoal: SessionGoal? { state.currentGoal }
     var isGoalInputPresented: Bool { state.isGoalInputPresented }
-    
+
     func sessionsByGoalText() -> [String: [SessionRecord]] {
         state.statistics.sessionsByGoalText(goals: state.allGoals)
     }
-    
+
     func statsForGoalText(_ goalText: String) -> (sessions: [SessionRecord], totalTime: TimeInterval, completedSessions: Int) {
         state.statistics.statsForGoalText(goalText, goals: state.allGoals)
     }
-    
+
     func uniqueGoalTexts() -> [String] {
         state.statistics.uniqueGoalTexts(goals: state.allGoals)
     }
@@ -159,7 +157,7 @@ final class Store: ObservableObject {
 // MARK: - Pomodoro Cycles Display
 
 extension Store {
-    
+
     /// Returns a string displaying today's pomodoros organized by cycles
     var todayPomodorosCyclesDisplay: String {
         let completedPomodoros = state.statistics.todayStats.completedPomodoros
@@ -191,4 +189,3 @@ extension Store {
         return cycleStrings.joined(separator: " ")
     }
 }
-
