@@ -1,21 +1,21 @@
-# 🍅 Pomodoro Timer
+# Pomodoro Timer
 
 A clean, minimalist Pomodoro Timer app built with SwiftUI using Unidirectional Data Flow (UDF) architecture.
 
-## ✨ Features
+## Features
 
 - **Clean Timer Interface**: Large, easy-to-read timer with progress circle
 - **Session Goals**: Set and track goals for each focus session
 - **Multiple Session Types**: 
-  - 🍅 Focus sessions (25 minutes)
-  - ☕️ Short breaks (5 minutes) 
-  - 🏖️ Long breaks (15 minutes)
+  - Focus sessions (25 minutes)
+  - Short breaks (5 minutes) 
+  - Long breaks (15 minutes)
 - **Automatic Cycling**: Seamlessly transitions between work and break sessions
 - **Session Statistics**: Track completed sessions and focus time
 - **Local Notifications**: Get notified when sessions complete
 - **Cross-Platform**: Works on both iOS and macOS
 
-## 🏗️ Architecture
+## Architecture
 
 Built using **Unidirectional Data Flow (UDF)** architecture:
 
@@ -24,11 +24,11 @@ Built using **Unidirectional Data Flow (UDF)** architecture:
 - **Reducer**: Pure functions that update state based on actions
 - **Store**: ObservableObject that manages state and side effects
 
-## 📱 Screenshots
+## Screenshots
 
 *Screenshots coming soon*
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -47,7 +47,7 @@ git clone https://github.com/Tsymlov/Pomodoro-Timer.git
 
 3. Build and run the project
 
-## 🎯 How to Use
+## How to Use
 
 1. **Start a Session**: Tap the play button to begin a 25-minute focus session
 2. **Set a Goal**: Tap "Set a goal for this session" to define what you want to accomplish
@@ -55,7 +55,7 @@ git clone https://github.com/Tsymlov/Pomodoro-Timer.git
 4. **Long Breaks**: After every 4 focus sessions, take a 15-minute long break
 5. **Track Progress**: View your completed sessions and total focus time
 
-## 🔧 Customization
+## Customization
 
 The timer durations can be customized in `Constants`:
 
@@ -67,11 +67,11 @@ private enum Constants {
 }
 ```
 
-## 📂 Project Structure
+## Project Structure
 
 *Project structure coming soon*
 
-## 🛠️ Technical Details
+## Technical Details
 
 ### Core Components
 
@@ -88,7 +88,7 @@ private enum Constants {
 - **Data Persistence**: Settings and statistics saved to UserDefaults
 - **Cross-Platform**: Conditional compilation for iOS/macOS differences
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
@@ -98,21 +98,21 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 👤 Author
+## Author
 
 **Alexey Tsymlov**
 
 - GitHub: [@Tsymlov](https://github.com/Tsymlov)
 
-## 🙏 Acknowledgments
+## Acknowledgments
 
 - Inspired by the Pomodoro Technique® developed by Francesco Cirillo
-- Built with love using SwiftUI and modern iOS development practices
+- Built with SwiftUI and modern iOS development practices
 
 ---
 
-⭐️ If you found this project helpful, please give it a star!
+If you found this project helpful, please give it a star!
