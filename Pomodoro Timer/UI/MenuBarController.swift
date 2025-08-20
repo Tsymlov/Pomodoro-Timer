@@ -71,11 +71,14 @@ final class MenuBarController: ObservableObject {
     private func updateMenuBarDisplay() {
         guard let button = statusItem?.button else { return }
         
-        // Update icon
-        updateIcon(for: button)
-        
-        // Update title (time display)
-        updateTitle(for: button)
+        // Use progress circle for running/paused, icon only for other states
+        if store.timerState == .running || store.timerState == .paused {
+            button.image = createProgressImage(progress: store.progress)
+            button.attributedTitle = NSAttributedString(string: "")
+        } else {
+            updateIcon(for: button)
+            button.attributedTitle = NSAttributedString(string: "")
+        }
     }
     
     private func updateIcon(for button: NSStatusBarButton) {
@@ -85,17 +88,6 @@ final class MenuBarController: ObservableObject {
         }
     }
     
-    private func updateTitle(for button: NSStatusBarButton) {
-        // Show time for all states except completed
-        if store.timerState != .completed {
-            let attributes: [NSAttributedString.Key: Any] = [
-                .font: NSFont.monospacedDigitSystemFont(ofSize: NSFont.systemFontSize, weight: .regular)
-            ]
-            button.attributedTitle = NSAttributedString(string: " \(store.formattedTime)", attributes: attributes)
-        } else {
-            button.attributedTitle = NSAttributedString(string: "")
-        }
-    }
     
     private func iconNameForCurrentState() -> String {
         switch store.timerState {
@@ -108,6 +100,64 @@ final class MenuBarController: ObservableObject {
         case .idle:
             return "timer"
         }
+    }
+    
+    // MARK: - Progress Image Creation
+    
+    private func createProgressImage(progress: Double) -> NSImage {
+        let size = NSSize(width: 18, height: 18)
+        let image = NSImage(size: size, flipped: false) { [weak self] rect in
+            guard let self = self else { return false }
+            let center = NSPoint(x: rect.midX, y: rect.midY)
+            let radius = min(rect.width, rect.height) / 2 - 1.5
+            
+            // Background circle (filled)
+            NSColor.tertiaryLabelColor.withAlphaComponent(0.2).setFill()
+            let backgroundPath = NSBezierPath(ovalIn: rect.insetBy(dx: 1.5, dy: 1.5))
+            backgroundPath.fill()
+            
+            // Progress sector (filled pie slice)
+            if progress > 0 {
+                let startAngle: CGFloat = 90 // Start from top
+                let endAngle = startAngle - (360 * progress)
+                
+                let progressPath = NSBezierPath()
+                progressPath.move(to: center)
+                progressPath.appendArc(
+                    withCenter: center,
+                    radius: radius,
+                    startAngle: startAngle,
+                    endAngle: endAngle,
+                    clockwise: true
+                )
+                progressPath.close()
+                
+                // Set color based on session type
+                let progressColor: NSColor
+                switch self.store.currentSession {
+                case .pomodoro:
+                    progressColor = NSColor.labelColor
+                case .shortBreak:
+                    progressColor = NSColor.systemBlue
+                case .longBreak:
+                    progressColor = NSColor.systemPurple
+                }
+                
+                progressColor.setFill()
+                progressPath.fill()
+            }
+            
+            // Border circle (stroke) - draw on a slightly larger rect to make it visible
+            NSColor.labelColor.setStroke()
+            let borderPath = NSBezierPath(ovalIn: rect.insetBy(dx: 0.5, dy: 0.5))
+            borderPath.lineWidth = 1.0
+            borderPath.stroke()
+            
+            return true
+        }
+        
+        image.isTemplate = false
+        return image
     }
     
     // MARK: - Menu Creation
