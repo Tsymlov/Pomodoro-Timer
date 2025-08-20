@@ -6,3 +6,5 @@ xcuserdata/
 timeline.xctimeline
 playground.xcworkspace
 .build/
+build/
+DerivedData/
