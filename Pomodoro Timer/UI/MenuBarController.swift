@@ -12,6 +12,18 @@ import Combine
 
 @MainActor
 final class MenuBarController: ObservableObject {
+    // MARK: - Constants
+    
+    private enum Constants {
+        static let updateInterval: TimeInterval = 1.0
+        static let iconSize = NSSize(width: 18, height: 18)
+        static let circleInset: CGFloat = 1.5
+        static let borderInset: CGFloat = 0.5
+        static let borderWidth: CGFloat = 1.0
+        static let backgroundAlpha: CGFloat = 0.2
+        static let windowCreationDelay: TimeInterval = 0.5
+    }
+    
     // MARK: - Properties
     
     private var statusItem: NSStatusItem?
@@ -24,147 +36,164 @@ final class MenuBarController: ObservableObject {
     init(store: Store) {
         self.store = store
         setupMenuBar()
-        observeStoreChanges()
+        setupObservers()
+    }
+    
+    deinit {
+        updateTimer?.invalidate()
+        updateTimer = nil
+        statusItem = nil
     }
     
     // MARK: - Setup
     
     private func setupMenuBar() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
-        
-        guard let button = statusItem?.button else { return }
-        
-        button.action = #selector(menuBarButtonClicked)
-        button.target = self
-        
+        configureStatusButton()
         updateMenuBarDisplay()
     }
     
-    private func observeStoreChanges() {
-        // Observe state changes for menu updates
+    private func configureStatusButton() {
+        guard let button = statusItem?.button else { return }
+        button.action = #selector(menuBarButtonClicked)
+        button.target = self
+    }
+    
+    private func setupObservers() {
+        observeStateChanges()
+        setupUpdateTimer()
+    }
+    
+    private func observeStateChanges() {
         store.$state
             .receive(on: DispatchQueue.main)
             .sink { [weak self] _ in
                 self?.updateMenuBarDisplay()
             }
             .store(in: &cancellables)
-        
-        // Start timer for regular updates when running
-        startUpdateTimer()
     }
     
-    private func startUpdateTimer() {
+    private func setupUpdateTimer() {
         updateTimer?.invalidate()
-        
-        updateTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+        updateTimer = Timer.scheduledTimer(
+            withTimeInterval: Constants.updateInterval,
+            repeats: true
+        ) { [weak self] _ in
             Task { @MainActor [weak self] in
-                guard let self = self else { return }
-                if self.store.timerState == .running {
-                    self.updateMenuBarDisplay()
-                }
+                self?.handleTimerUpdate()
             }
         }
+    }
+    
+    private func handleTimerUpdate() {
+        guard store.timerState == .running else { return }
+        updateMenuBarDisplay()
     }
     
     // MARK: - UI Updates
     
     private func updateMenuBarDisplay() {
         guard let button = statusItem?.button else { return }
-        
-        // Use progress circle for running/paused, icon only for other states
-        if store.timerState == .running || store.timerState == .paused {
-            button.image = createProgressImage(progress: store.progress)
-            button.attributedTitle = NSAttributedString(string: "")
-        } else {
-            updateIcon(for: button)
-            button.attributedTitle = NSAttributedString(string: "")
-        }
-    }
-    
-    private func updateIcon(for button: NSStatusBarButton) {
-        let iconName = iconNameForCurrentState()
-        if let image = NSImage(systemSymbolName: iconName, accessibilityDescription: nil) {
-            button.image = image
-        }
-    }
-    
-    
-    private func iconNameForCurrentState() -> String {
-        switch store.timerState {
-        case .running:
-            return store.currentSession == .pomodoro ? "timer" : "cup.and.saucer"
-        case .paused:
-            return "pause.circle"
-        case .completed:
-            return "checkmark.circle"
-        case .idle:
-            return "timer"
-        }
+        button.image = createProgressImage(progress: store.progress)
+        button.attributedTitle = NSAttributedString(string: "")
     }
     
     // MARK: - Progress Image Creation
     
     private func createProgressImage(progress: Double) -> NSImage {
-        let size = NSSize(width: 18, height: 18)
-        let image = NSImage(size: size, flipped: false) { [weak self] rect in
-            guard let self = self else { return false }
-            let center = NSPoint(x: rect.midX, y: rect.midY)
-            let radius = min(rect.width, rect.height) / 2 - 1.5
-            
-            // Background circle (filled)
-            NSColor.tertiaryLabelColor.withAlphaComponent(0.2).setFill()
-            let backgroundPath = NSBezierPath(ovalIn: rect.insetBy(dx: 1.5, dy: 1.5))
-            backgroundPath.fill()
-            
-            // Progress sector (filled pie slice)
-            if progress > 0 {
-                let startAngle: CGFloat = 90 // Start from top
-                let endAngle = startAngle - (360 * progress)
-                
-                let progressPath = NSBezierPath()
-                progressPath.move(to: center)
-                progressPath.appendArc(
-                    withCenter: center,
-                    radius: radius,
-                    startAngle: startAngle,
-                    endAngle: endAngle,
-                    clockwise: true
-                )
-                progressPath.close()
-                
-                // Set color based on session type
-                let progressColor: NSColor
-                switch self.store.currentSession {
-                case .pomodoro:
-                    progressColor = NSColor.labelColor
-                case .shortBreak:
-                    progressColor = NSColor.systemBlue
-                case .longBreak:
-                    progressColor = NSColor.systemPurple
-                }
-                
-                progressColor.setFill()
-                progressPath.fill()
-            }
-            
-            // Border circle (stroke) - draw on a slightly larger rect to make it visible
-            NSColor.labelColor.setStroke()
-            let borderPath = NSBezierPath(ovalIn: rect.insetBy(dx: 0.5, dy: 0.5))
-            borderPath.lineWidth = 1.0
-            borderPath.stroke()
-            
-            return true
+        let image = NSImage(size: Constants.iconSize, flipped: false) { [weak self] rect in
+            self?.drawProgressCircle(in: rect, progress: progress) ?? false
         }
-        
         image.isTemplate = false
         return image
+    }
+    
+    private func drawProgressCircle(in rect: NSRect, progress: Double) -> Bool {
+        let center = NSPoint(x: rect.midX, y: rect.midY)
+        let radius = min(rect.width, rect.height) / 2 - Constants.circleInset
+        
+        drawBackground(in: rect)
+        drawProgress(center: center, radius: radius, progress: progress)
+        drawBorder(in: rect)
+        
+        return true
+    }
+    
+    private func drawBackground(in rect: NSRect) {
+        NSColor.tertiaryLabelColor
+            .withAlphaComponent(Constants.backgroundAlpha)
+            .setFill()
+        NSBezierPath(ovalIn: rect.insetBy(
+            dx: Constants.circleInset,
+            dy: Constants.circleInset
+        )).fill()
+    }
+    
+    private func drawProgress(center: NSPoint, radius: CGFloat, progress: Double) {
+        guard progress > 0 else { return }
+        
+        let path = createProgressPath(
+            center: center,
+            radius: radius,
+            progress: progress
+        )
+        
+        progressColor.setFill()
+        path.fill()
+    }
+    
+    private func createProgressPath(center: NSPoint, radius: CGFloat, progress: Double) -> NSBezierPath {
+        let startAngle: CGFloat = 90
+        let endAngle = startAngle - (360 * progress)
+        
+        let path = NSBezierPath()
+        path.move(to: center)
+        path.appendArc(
+            withCenter: center,
+            radius: radius,
+            startAngle: startAngle,
+            endAngle: endAngle,
+            clockwise: true
+        )
+        path.close()
+        return path
+    }
+    
+    private var progressColor: NSColor {
+        if store.timerState == .completed {
+            return .systemGreen
+        }
+        
+        switch store.currentSession {
+        case .pomodoro:
+            return .labelColor
+        case .shortBreak:
+            return .systemBlue
+        case .longBreak:
+            return .systemPurple
+        }
+    }
+    
+    private func drawBorder(in rect: NSRect) {
+        NSColor.labelColor.setStroke()
+        let borderPath = NSBezierPath(ovalIn: rect.insetBy(
+            dx: Constants.borderInset,
+            dy: Constants.borderInset
+        ))
+        borderPath.lineWidth = Constants.borderWidth
+        borderPath.stroke()
     }
     
     // MARK: - Menu Creation
     
     private func createMenu() -> NSMenu {
         let menu = NSMenu()
-        
+        buildMenuItems(for: menu)
+        configureMenuTargets(for: menu)
+        return menu
+    }
+    
+    private func buildMenuItems(for menu: NSMenu) {
         addStatusItem(to: menu)
         menu.addItem(.separator())
         
@@ -175,20 +204,22 @@ final class MenuBarController: ObservableObject {
         menu.addItem(.separator())
         
         addQuitItem(to: menu)
-        
-        // Set target for all action items
-        menu.items.forEach { item in
-            if item.action != nil {
-                item.target = self
-            }
-        }
-        
-        return menu
     }
     
+    private func configureMenuTargets(for menu: NSMenu) {
+        menu.items
+            .filter { $0.action != nil }
+            .forEach { $0.target = self }
+    }
+    
+    // MARK: - Menu Items
+    
     private func addStatusItem(to menu: NSMenu) {
-        let statusText = currentStatusText()
-        let statusItem = NSMenuItem(title: statusText, action: nil, keyEquivalent: "")
+        let statusItem = NSMenuItem(
+            title: statusText,
+            action: nil,
+            keyEquivalent: ""
+        )
         statusItem.isEnabled = false
         menu.addItem(statusItem)
     }
@@ -201,15 +232,27 @@ final class MenuBarController: ObservableObject {
     private func addMainTimerControls(to menu: NSMenu) {
         if store.canStart {
             let title = store.timerState == .paused ? "Resume Timer" : "Start Timer"
-            menu.addItem(NSMenuItem(title: title, action: #selector(startTimer), keyEquivalent: "s"))
+            menu.addItem(createMenuItem(
+                title: title,
+                action: #selector(startTimer),
+                keyEquivalent: "s"
+            ))
         }
         
         if store.canPause {
-            menu.addItem(NSMenuItem(title: "Pause Timer", action: #selector(pauseTimer), keyEquivalent: "p"))
+            menu.addItem(createMenuItem(
+                title: "Pause Timer",
+                action: #selector(pauseTimer),
+                keyEquivalent: "p"
+            ))
         }
         
         if store.canReset {
-            menu.addItem(NSMenuItem(title: "Reset Timer", action: #selector(resetTimer), keyEquivalent: "r"))
+            menu.addItem(createMenuItem(
+                title: "Reset Timer",
+                action: #selector(resetTimer),
+                keyEquivalent: "r"
+            ))
         }
     }
     
@@ -217,22 +260,45 @@ final class MenuBarController: ObservableObject {
         guard store.timerState == .idle else { return }
         
         menu.addItem(.separator())
-        menu.addItem(NSMenuItem(title: "Start Short Break", action: #selector(startShortBreak), keyEquivalent: ""))
-        menu.addItem(NSMenuItem(title: "Start Long Break", action: #selector(startLongBreak), keyEquivalent: ""))
+        menu.addItem(createMenuItem(
+            title: "Start Short Break",
+            action: #selector(startShortBreak)
+        ))
+        menu.addItem(createMenuItem(
+            title: "Start Long Break",
+            action: #selector(startLongBreak)
+        ))
     }
     
     private func addWindowControl(to menu: NSMenu) {
-        menu.addItem(NSMenuItem(title: "Show Window", action: #selector(showMainWindow), keyEquivalent: ""))
+        menu.addItem(createMenuItem(
+            title: "Show Window",
+            action: #selector(showMainWindow)
+        ))
     }
     
     private func addQuitItem(to menu: NSMenu) {
-        menu.addItem(NSMenuItem(title: "Quit Pomodoro Timer", action: #selector(quitApp), keyEquivalent: "q"))
+        menu.addItem(createMenuItem(
+            title: "Quit Pomodoro Timer",
+            action: #selector(quitApp),
+            keyEquivalent: "q"
+        ))
     }
     
-    private func currentStatusText() -> String {
+    private func createMenuItem(
+        title: String,
+        action: Selector?,
+        keyEquivalent: String = ""
+    ) -> NSMenuItem {
+        NSMenuItem(title: title, action: action, keyEquivalent: keyEquivalent)
+    }
+    
+    // MARK: - Computed Properties
+    
+    private var statusText: String {
         switch store.timerState {
         case .running:
-            return "\(store.currentSession.displayName)"
+            return store.currentSession.displayName
         case .paused:
             return "\(store.currentSession.displayName) - Paused"
         case .completed:
@@ -248,63 +314,39 @@ final class MenuBarController: ObservableObject {
         let menu = createMenu()
         statusItem?.menu = menu
         statusItem?.button?.performClick(nil)
-        
-        // Clean up menu after showing
         statusItem?.menu = nil
     }
     
     @objc private func startTimer() {
-        Task { @MainActor in
-            if store.timerState == .paused {
-                store.send(.resume)
-            } else {
-                store.send(.start)
-            }
-        }
+        sendAction(store.timerState == .paused ? .resume : .start)
     }
     
     @objc private func pauseTimer() {
-        Task { @MainActor in
-            store.send(.pause)
-        }
+        sendAction(.pause)
     }
     
     @objc private func resetTimer() {
-        Task { @MainActor in
-            store.send(.reset)
-        }
+        sendAction(.reset)
     }
     
     @objc private func startShortBreak() {
-        Task { @MainActor in
-            store.send(.startShortBreak)
-        }
+        sendAction(.startShortBreak)
     }
     
     @objc private func startLongBreak() {
+        sendAction(.startLongBreak)
+    }
+    
+    private func sendAction(_ action: Action) {
         Task { @MainActor in
-            store.send(.startLongBreak)
+            store.send(action)
         }
     }
     
     @objc private func showMainWindow() {
         Task { @MainActor in
-            // Switch to regular app mode to show windows
-            NSApp.setActivationPolicy(.regular)
-            NSApp.activate(ignoringOtherApps: true)
-            
-            // Find existing main window
-            let mainWindow = NSApp.windows.first { window in
-                window.canBecomeMain && !isSystemWindow(window)
-            }
-            
-            if let window = mainWindow {
-                // Show existing window
-                showWindow(window)
-            } else {
-                // Create new window by reopening the app
-                reopenApplication()
-            }
+            activateApp()
+            showOrCreateMainWindow()
         }
     }
     
@@ -312,13 +354,31 @@ final class MenuBarController: ObservableObject {
         NSApp.terminate(nil)
     }
     
-    // MARK: - Window Management Helpers
+    // MARK: - Window Management
+    
+    private func activateApp() {
+        NSApp.setActivationPolicy(.regular)
+        NSApp.activate(ignoringOtherApps: true)
+    }
+    
+    private func showOrCreateMainWindow() {
+        if let window = findMainWindow() {
+            showWindow(window)
+        } else {
+            reopenApplication()
+        }
+    }
+    
+    private func findMainWindow() -> NSWindow? {
+        NSApp.windows.first { window in
+            window.canBecomeMain && !isSystemWindow(window)
+        }
+    }
     
     private func isSystemWindow(_ window: NSWindow) -> Bool {
         let className = NSStringFromClass(type(of: window))
-        return className.contains("StatusBar") || 
-               className.contains("Panel") ||
-               className.contains("TitlebarAccessoryView")
+        return ["StatusBar", "Panel", "TitlebarAccessoryView"]
+            .contains { className.contains($0) }
     }
     
     private func showWindow(_ window: NSWindow) {
@@ -330,29 +390,31 @@ final class MenuBarController: ObservableObject {
     
     private func reopenApplication() {
         guard let bundleIdentifier = Bundle.main.bundleIdentifier,
-              let url = NSWorkspace.shared.urlForApplication(withBundleIdentifier: bundleIdentifier) else {
-            return
-        }
+              let url = NSWorkspace.shared.urlForApplication(
+                withBundleIdentifier: bundleIdentifier
+              ) else { return }
         
         let configuration = NSWorkspace.OpenConfiguration()
         configuration.activates = true
         
-        NSWorkspace.shared.openApplication(at: url, configuration: configuration) { _, _ in
-            // Wait for window to be created
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
-                if let window = NSApp.windows.first(where: { $0.canBecomeMain && !(self?.isSystemWindow($0) ?? true) }) {
-                    self?.showWindow(window)
-                }
+        NSWorkspace.shared.openApplication(
+            at: url,
+            configuration: configuration
+        ) { [weak self] _, _ in
+            self?.delayedWindowCheck()
+        }
+    }
+    
+    private func delayedWindowCheck() {
+        DispatchQueue.main.asyncAfter(
+            deadline: .now() + Constants.windowCreationDelay
+        ) { [weak self] in
+            if let window = self?.findMainWindow() {
+                self?.showWindow(window)
             }
         }
     }
     
-    // MARK: - Cleanup
-    
-    deinit {
-        updateTimer?.invalidate()
-        statusItem = nil
-    }
 }
 
 // MARK: - SessionType Extension
