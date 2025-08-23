@@ -58,8 +58,12 @@ final class MenuTimerView: NSView {
     }
     
     private func createProgressContainer() -> NSView {
+        // Calculate total width needed for progress + spacing + text
+        let totalContentWidth = Constants.progressSize + Constants.timeLabelSpacing + 80 // 80 is approximate text width
+        let startX = (Constants.viewWidth - totalContentWidth) / 2
+        
         let container = NSView(frame: NSRect(
-            x: Constants.padding,
+            x: startX,
             y: (frame.height - Constants.progressSize) / 2,
             width: Constants.progressSize,
             height: Constants.progressSize
@@ -86,6 +90,10 @@ final class MenuTimerView: NSView {
     }
     
     private func setupTimeLabel() {
+        // Calculate centered position
+        let totalContentWidth = Constants.progressSize + Constants.timeLabelSpacing + 80
+        let startX = (Constants.viewWidth - totalContentWidth) / 2
+        
         timeLabel.isBezeled = false
         timeLabel.isEditable = false
         timeLabel.drawsBackground = false
@@ -93,7 +101,7 @@ final class MenuTimerView: NSView {
         timeLabel.font = Fonts.menuTimerFont()
         timeLabel.textColor = NSColor(Colors.primaryText)
         timeLabel.frame = NSRect(
-            x: Constants.padding + Constants.progressSize + Constants.timeLabelSpacing,
+            x: startX + Constants.progressSize + Constants.timeLabelSpacing,
             y: (frame.height - Constants.timeLabelHeight) / 2,
             width: 120,
             height: Constants.timeLabelHeight
