@@ -12,16 +12,6 @@ import SwiftUI
 // Custom NSView for timer display in menu
 final class MenuTimerView: NSView {
     // MARK: - Constants
-    private enum Constants {
-        static let progressSize: CGFloat = 24
-        static let padding: CGFloat = 16
-        static let lineWidth: CGFloat = 3
-        static let strokeInset: CGFloat = 3
-        static let timeLabelSpacing: CGFloat = 12
-        static let timeLabelHeight: CGFloat = 28
-        static let viewWidth: CGFloat = 200
-        static let viewHeight: CGFloat = 44
-    }
     
     // MARK: - Properties
     private let progressLayer = CAShapeLayer()
@@ -30,12 +20,12 @@ final class MenuTimerView: NSView {
     private weak var store: Store?
     
     // Cached calculations
-    private lazy var center = CGPoint(x: Constants.progressSize / 2, y: Constants.progressSize / 2)
-    private lazy var radius = (Constants.progressSize - Constants.strokeInset) / 2
+    private lazy var center = CGPoint(x: Constants.menuProgressSize / 2, y: Constants.menuProgressSize / 2)
+    private lazy var radius = (Constants.menuProgressSize - Constants.strokeInset) / 2
     
     init(store: Store) {
         self.store = store
-        super.init(frame: NSRect(x: 0, y: 0, width: Constants.viewWidth, height: Constants.viewHeight))
+        super.init(frame: NSRect(x: 0, y: 0, width: Constants.menuTimerViewWidth, height: Constants.menuTimerViewHeight))
         setupView()
     }
     
@@ -59,40 +49,40 @@ final class MenuTimerView: NSView {
     
     private func createProgressContainer() -> NSView {
         // Calculate total width needed for progress + spacing + text
-        let totalContentWidth = Constants.progressSize + Constants.timeLabelSpacing + 80 // 80 is approximate text width
-        let startX = (Constants.viewWidth - totalContentWidth) / 2
+        let totalContentWidth = Constants.menuProgressSize + Constants.menuTimeLabelSpacing + Constants.menuContentApproximateWidth
+        let startX = (Constants.menuTimerViewWidth - totalContentWidth) / 2
         
         let container = NSView(frame: NSRect(
             x: startX,
-            y: (frame.height - Constants.progressSize) / 2,
-            width: Constants.progressSize,
-            height: Constants.progressSize
+            y: (frame.height - Constants.menuProgressSize) / 2,
+            width: Constants.menuProgressSize,
+            height: Constants.menuProgressSize
         ))
         container.wantsLayer = true
         return container
     }
     
     private func setupBackgroundLayer(in container: NSView) {
-        backgroundLayer.frame = CGRect(x: 0, y: 0, width: Constants.progressSize, height: Constants.progressSize)
+        backgroundLayer.frame = CGRect(x: 0, y: 0, width: Constants.menuProgressSize, height: Constants.menuProgressSize)
         backgroundLayer.path = createCirclePath(center: center, radius: radius)
         backgroundLayer.fillColor = NSColor(Colors.progressFillBackground).cgColor
         // Will be set dynamically in updateDisplay based on current session
-        backgroundLayer.lineWidth = Constants.lineWidth
+        backgroundLayer.lineWidth = Constants.menuProgressLineWidth
         container.layer?.addSublayer(backgroundLayer)
     }
     
     private func setupProgressLayer(in container: NSView) {
         progressLayer.frame = backgroundLayer.frame
         progressLayer.fillColor = NSColor(Colors.progressFillBackground).cgColor
-        progressLayer.lineWidth = Constants.lineWidth
+        progressLayer.lineWidth = Constants.menuProgressLineWidth
         progressLayer.lineCap = .round
         container.layer?.addSublayer(progressLayer)
     }
     
     private func setupTimeLabel() {
         // Calculate centered position
-        let totalContentWidth = Constants.progressSize + Constants.timeLabelSpacing + 80
-        let startX = (Constants.viewWidth - totalContentWidth) / 2
+        let totalContentWidth = Constants.menuProgressSize + Constants.menuTimeLabelSpacing + 80
+        let startX = (Constants.menuTimerViewWidth - totalContentWidth) / 2
         
         timeLabel.isBezeled = false
         timeLabel.isEditable = false
@@ -101,10 +91,10 @@ final class MenuTimerView: NSView {
         timeLabel.font = Fonts.menuTimerFont()
         timeLabel.textColor = NSColor(Colors.primaryText)
         timeLabel.frame = NSRect(
-            x: startX + Constants.progressSize + Constants.timeLabelSpacing,
-            y: (frame.height - Constants.timeLabelHeight) / 2,
-            width: 120,
-            height: Constants.timeLabelHeight
+            x: startX + Constants.menuProgressSize + Constants.menuTimeLabelSpacing,
+            y: (frame.height - Constants.menuTimeLabelHeight) / 2,
+            width: Constants.menuTimeLabelWidth,
+            height: Constants.menuTimeLabelHeight
         )
     }
     

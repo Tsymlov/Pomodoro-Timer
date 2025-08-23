@@ -14,14 +14,8 @@ import Combine
 final class MenuBarController: NSObject, ObservableObject {
     // MARK: - Constants
 
-    private enum Constants {
-        static let updateInterval: TimeInterval = 1.0
-        static let iconSize = NSSize(width: 18, height: 18)
-        static let circleInset: CGFloat = 1.5
-        static let borderInset: CGFloat = 0.5
-        static let borderWidth: CGFloat = 1.0
-        static let backgroundAlpha: CGFloat = 0.2
-        static let windowCreationDelay: TimeInterval = 0.5
+    private enum LocalConstants {
+        static let iconSize = NSSize(width: Constants.menuBarIconSize, height: Constants.menuBarIconSize)
     }
 
     // MARK: - Properties
@@ -81,7 +75,7 @@ final class MenuBarController: NSObject, ObservableObject {
     private func setupUpdateTimer() {
         updateTimer?.invalidate()
         updateTimer = Timer.scheduledTimer(
-            withTimeInterval: Constants.updateInterval,
+            withTimeInterval: Constants.menuUpdateInterval,
             repeats: true
         ) { [weak self] _ in
             Task { @MainActor [weak self] in
@@ -106,7 +100,7 @@ final class MenuBarController: NSObject, ObservableObject {
     // MARK: - Progress Image Creation
 
     private func createProgressImage(progress: Double) -> NSImage {
-        let image = NSImage(size: Constants.iconSize, flipped: false) { [weak self] rect in
+        let image = NSImage(size: LocalConstants.iconSize, flipped: false) { [weak self] rect in
             self?.drawProgressCircle(in: rect, progress: progress) ?? false
         }
         image.isTemplate = false
@@ -115,7 +109,7 @@ final class MenuBarController: NSObject, ObservableObject {
 
     private func drawProgressCircle(in rect: NSRect, progress: Double) -> Bool {
         let center = NSPoint(x: rect.midX, y: rect.midY)
-        let radius = min(rect.width, rect.height) / 2 - Constants.circleInset
+        let radius = min(rect.width, rect.height) / 2 - Constants.menuBarCircleInset
 
         drawBackground(in: rect)
         drawProgress(center: center, radius: radius, progress: progress)
@@ -126,11 +120,11 @@ final class MenuBarController: NSObject, ObservableObject {
 
     private func drawBackground(in rect: NSRect) {
         NSColor.tertiaryLabelColor
-            .withAlphaComponent(Constants.backgroundAlpha)
+            .withAlphaComponent(Constants.menuBarBackgroundAlpha)
             .setFill()
         NSBezierPath(ovalIn: rect.insetBy(
-            dx: Constants.circleInset,
-            dy: Constants.circleInset
+            dx: Constants.menuBarCircleInset,
+            dy: Constants.menuBarCircleInset
         )).fill()
     }
 
@@ -148,8 +142,8 @@ final class MenuBarController: NSObject, ObservableObject {
     }
 
     private func createProgressPath(center: NSPoint, radius: CGFloat, progress: Double) -> NSBezierPath {
-        let startAngle: CGFloat = 90
-        let endAngle = startAngle - (360 * progress)
+        let startAngle: CGFloat = Constants.menuBarProgressStartAngle
+        let endAngle = startAngle - (Constants.menuBarProgressFullCircle * progress)
 
         let path = NSBezierPath()
         path.move(to: center)
@@ -182,8 +176,8 @@ final class MenuBarController: NSObject, ObservableObject {
     private func drawBorder(in rect: NSRect) {
         NSColor.labelColor.setStroke()
         let borderPath = NSBezierPath(ovalIn: rect.insetBy(
-            dx: Constants.borderInset,
-            dy: Constants.borderInset
+            dx: Constants.menuBarBorderInset,
+            dy: Constants.menuBarBorderInset
         ))
         borderPath.lineWidth = Constants.borderWidth
         borderPath.stroke()
@@ -455,7 +449,7 @@ extension MenuBarController: NSMenuDelegate {
     }
     
     private func createMenuUpdateTimer() -> Timer {
-        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+        Timer.scheduledTimer(withTimeInterval: Constants.menuUpdateInterval, repeats: true) { [weak self] _ in
             Task { @MainActor [weak self] in
                 self?.currentMenuTimerView?.updateDisplay()
             }

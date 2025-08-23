@@ -94,11 +94,11 @@ struct TimerView: View {
                 .frame(maxWidth: .infinity)
                 .padding()
                 .background(
-                    RoundedRectangle(cornerRadius: 12)
+                    RoundedRectangle(cornerRadius: Constants.cornerRadius)
                         .fill(store.currentSession.backgroundColor)
                         .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(store.currentSession.color, lineWidth: 1)
+                            RoundedRectangle(cornerRadius: Constants.cornerRadius)
+                                .stroke(store.currentSession.color, lineWidth: Constants.borderWidth)
                         )
                 )
         }
@@ -123,8 +123,8 @@ struct TimerView: View {
             .frame(maxWidth: .infinity)
             .padding()
             .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .stroke(store.currentSession.borderColor, style: StrokeStyle(lineWidth: 1, dash: [5]))
+                RoundedRectangle(cornerRadius: Constants.cornerRadius)
+                    .stroke(store.currentSession.borderColor, style: StrokeStyle(lineWidth: Constants.borderWidth, dash: Constants.dashPattern))
             )
         }
         .buttonStyle(PlainButtonStyle())
@@ -186,13 +186,8 @@ struct TimerCircleView: View {
     let cyclesDisplay: String
     let showCycles: Bool
 
-    #if os(iOS)
-    private let circleSize: CGFloat = 280
-    private let lineWidth: CGFloat = 12
-    #else
-    private let circleSize: CGFloat = 200
-    private let lineWidth: CGFloat = 10
-    #endif
+    private let circleSize: CGFloat = Constants.timerCircleSize
+    private let lineWidth: CGFloat = Constants.timerLineWidth
 
     var body: some View {
         ZStack {
