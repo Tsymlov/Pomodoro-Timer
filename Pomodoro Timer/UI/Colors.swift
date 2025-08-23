@@ -54,4 +54,16 @@ extension SessionType {
             return Colors.longBreak
         }
     }
+    
+    var backgroundColor: Color {
+        return color.opacity(Colors.sessionBackgroundOpacity)
+    }
+    
+    var progressBackgroundColor: Color {
+        return color.opacity(Colors.progressBackgroundOpacity)
+    }
+    
+    var borderColor: Color {
+        return color.opacity(Colors.sessionBorderOpacity)
+    }
 }

@@ -63,6 +63,7 @@ struct TimerView: View {
             progress: store.progress,
             formattedTime: store.formattedTime,
             sessionColor: store.currentSession.color,
+            progressBackgroundColor: store.currentSession.progressBackgroundColor,
             cyclesDisplay: store.todayPomodorosCyclesDisplay,
             showCycles: store.statistics.todayStats.completedPomodoros > 0
         )
@@ -94,7 +95,7 @@ struct TimerView: View {
                 .padding()
                 .background(
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(store.currentSession.color.opacity(Colors.sessionBackgroundOpacity))
+                        .fill(store.currentSession.backgroundColor)
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
                                 .stroke(store.currentSession.color, lineWidth: 1)
@@ -123,7 +124,7 @@ struct TimerView: View {
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(store.currentSession.color.opacity(Colors.sessionBorderOpacity), style: StrokeStyle(lineWidth: 1, dash: [5]))
+                    .stroke(store.currentSession.borderColor, style: StrokeStyle(lineWidth: 1, dash: [5]))
             )
         }
         .buttonStyle(PlainButtonStyle())
@@ -181,6 +182,7 @@ struct TimerCircleView: View {
     let progress: Double
     let formattedTime: String
     let sessionColor: Color
+    let progressBackgroundColor: Color
     let cyclesDisplay: String
     let showCycles: Bool
 
@@ -202,7 +204,7 @@ struct TimerCircleView: View {
 
     private var backgroundCircle: some View {
         Circle()
-            .stroke(sessionColor.opacity(Colors.progressBackgroundOpacity), lineWidth: lineWidth)
+            .stroke(progressBackgroundColor, lineWidth: lineWidth)
             .frame(width: circleSize, height: circleSize)
     }
 
