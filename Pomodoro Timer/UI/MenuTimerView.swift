@@ -74,7 +74,7 @@ final class MenuTimerView: NSView {
     private func setupBackgroundLayer(in container: NSView) {
         backgroundLayer.frame = CGRect(x: 0, y: 0, width: Constants.progressSize, height: Constants.progressSize)
         backgroundLayer.path = createCirclePath(center: center, radius: radius)
-        backgroundLayer.fillColor = NSColor.clear.cgColor
+        backgroundLayer.fillColor = NSColor(Colors.progressFillBackground).cgColor
         backgroundLayer.strokeColor = NSColor(Colors.progressBackground).withAlphaComponent(Constants.backgroundAlpha).cgColor
         backgroundLayer.lineWidth = Constants.lineWidth
         container.layer?.addSublayer(backgroundLayer)
@@ -82,7 +82,7 @@ final class MenuTimerView: NSView {
     
     private func setupProgressLayer(in container: NSView) {
         progressLayer.frame = backgroundLayer.frame
-        progressLayer.fillColor = NSColor.clear.cgColor
+        progressLayer.fillColor = NSColor(Colors.progressFillBackground).cgColor
         progressLayer.lineWidth = Constants.lineWidth
         progressLayer.lineCap = .round
         container.layer?.addSublayer(progressLayer)
