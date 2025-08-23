@@ -21,8 +21,6 @@ final class MenuTimerView: NSView {
         static let timeLabelHeight: CGFloat = 28
         static let viewWidth: CGFloat = 200
         static let viewHeight: CGFloat = 44
-        static let readyFontSize: CGFloat = 20
-        static let timeFontSize: CGFloat = 24
     }
     
     // MARK: - Properties
@@ -92,7 +90,7 @@ final class MenuTimerView: NSView {
         timeLabel.isEditable = false
         timeLabel.drawsBackground = false
         timeLabel.alignment = .left
-        timeLabel.font = NSFont.monospacedDigitSystemFont(ofSize: Constants.timeFontSize, weight: .medium)
+        timeLabel.font = Fonts.menuTimerFont()
         timeLabel.textColor = NSColor(Colors.primaryText)
         timeLabel.frame = NSRect(
             x: Constants.padding + Constants.progressSize + Constants.timeLabelSpacing,
@@ -148,13 +146,13 @@ final class MenuTimerView: NSView {
     
     private func configureTimeLabelForIdleState() {
         timeLabel.stringValue = "Ready"
-        timeLabel.font = NSFont.systemFont(ofSize: Constants.readyFontSize, weight: .medium)
+        timeLabel.font = Fonts.menuReadyFont()
         timeLabel.textColor = NSColor(Colors.secondaryText)
     }
     
     private func configureTimeLabelForActiveState(_ time: String, store: Store) {
         timeLabel.stringValue = time
-        timeLabel.font = NSFont.monospacedDigitSystemFont(ofSize: Constants.timeFontSize, weight: .medium)
+        timeLabel.font = Fonts.menuTimerFont()
         
         // Use session color for text
         if store.timerState == .completed {

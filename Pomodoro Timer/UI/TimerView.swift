@@ -88,7 +88,7 @@ struct TimerView: View {
             showingGoalInput = true
         }) {
             Text(goal.text)
-                .font(.body)
+                .font(Fonts.body)
                 .foregroundColor(Colors.primaryText)
                 .multilineTextAlignment(.center)
                 .frame(maxWidth: .infinity)
@@ -114,10 +114,10 @@ struct TimerView: View {
         }) {
             VStack(spacing: 4) {
                 Image(systemName: "target")
-                    .font(.title2)
+                    .font(Fonts.title2)
                     .foregroundColor(Colors.secondaryText)
                 Text("Set a goal for this session")
-                    .font(.body)
+                    .font(Fonts.body)
                     .foregroundColor(Colors.secondaryText)
             }
             .frame(maxWidth: .infinity)
@@ -224,15 +224,15 @@ struct TimerCircleView: View {
         VStack(spacing: 6) {
             Text(formattedTime)
                 #if os(iOS)
-                .font(.system(size: 64, weight: .heavy).monospacedDigit())
+                .font(Fonts.timerDisplay)
                 #else
-                .font(.system(size: 42, weight: .heavy).monospacedDigit())
+                .font(Fonts.timerDisplay)
                 #endif
                 .foregroundColor(sessionColor)
 
             if showCycles {
                 Text(cyclesDisplay)
-                    .font(.system(size: 16, weight: .heavy))
+                    .font(Fonts.timerCycles)
                     .foregroundColor(sessionColor)
                     .lineLimit(2)
                     .multilineTextAlignment(.center)
@@ -276,7 +276,7 @@ struct ControlButtonsView: View {
     private var resetButton: some View {
         Button(action: onReset) {
             Image(systemName: "arrow.counterclockwise")
-                .font(.title2)
+                .font(Fonts.secondaryButton)
                 .foregroundColor(Colors.resetButton)
                 .frame(width: buttonSize, height: buttonSize)
                 .background(Colors.resetButtonBackground)
@@ -288,7 +288,7 @@ struct ControlButtonsView: View {
     private var mainActionButton: some View {
         Button(action: onMainAction) {
             Image(systemName: mainButtonIcon)
-                .font(.title)
+                .font(Fonts.mainButton)
                 .foregroundColor(Colors.mainButtonText)
                 .frame(width: mainButtonSize, height: mainButtonSize)
                 .background(sessionColor)
@@ -301,7 +301,7 @@ struct ControlButtonsView: View {
     private var skipButton: some View {
         Button(action: onSkip) {
             Image(systemName: "forward.fill")
-                .font(.title2)
+                .font(Fonts.secondaryButton)
                 .foregroundColor(Colors.skipButton)
                 .frame(width: buttonSize, height: buttonSize)
                 .background(Colors.skipButtonBackground)
@@ -344,7 +344,7 @@ struct GoalInputSheet: View {
             Spacer()
 
             Text("Session Goal")
-                .font(.headline)
+                .font(Fonts.headline)
 
             Spacer()
 
@@ -361,8 +361,7 @@ struct GoalInputSheet: View {
 
     private var questionText: some View {
         Text("What's your goal?")
-            .font(.title3)
-            .fontWeight(.medium)
+            .font(Fonts.title3.weight(.medium))
             .multilineTextAlignment(.center)
             .padding(.top)
     }
