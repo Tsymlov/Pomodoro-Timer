@@ -13,6 +13,11 @@ enum Colors {
     static let shortBreak = Color.blue
     static let longBreak = Color.purple
     static let completed = Color.green
+    
+    // MARK: - Opacity Values
+    static let sessionBackgroundOpacity = 0.1
+    static let progressBackgroundOpacity = 0.2
+    static let sessionBorderOpacity = 0.3
 
     // MARK: - Button Colors
     static let resetButton = Color.orange

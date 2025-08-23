@@ -94,7 +94,7 @@ struct TimerView: View {
                 .padding()
                 .background(
                     RoundedRectangle(cornerRadius: 12)
-                        .fill(store.currentSession.color.opacity(0.1))
+                        .fill(store.currentSession.color.opacity(Colors.sessionBackgroundOpacity))
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
                                 .stroke(store.currentSession.color, lineWidth: 1)
@@ -123,7 +123,7 @@ struct TimerView: View {
             .padding()
             .background(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(store.currentSession.color.opacity(0.3), style: StrokeStyle(lineWidth: 1, dash: [5]))
+                    .stroke(store.currentSession.color.opacity(Colors.sessionBorderOpacity), style: StrokeStyle(lineWidth: 1, dash: [5]))
             )
         }
         .buttonStyle(PlainButtonStyle())
@@ -202,7 +202,7 @@ struct TimerCircleView: View {
 
     private var backgroundCircle: some View {
         Circle()
-            .stroke(sessionColor.opacity(0.2), lineWidth: lineWidth)
+            .stroke(sessionColor.opacity(Colors.progressBackgroundOpacity), lineWidth: lineWidth)
             .frame(width: circleSize, height: circleSize)
     }
 
