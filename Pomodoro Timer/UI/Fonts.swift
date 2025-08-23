@@ -32,7 +32,7 @@ enum Fonts {
     static let menuReadyFontSize: CGFloat = 20
     
     static func menuTimerFont() -> NSFont {
-        return NSFont.monospacedDigitSystemFont(ofSize: menuTimerFontSize, weight: .medium)
+        return NSFont.monospacedDigitSystemFont(ofSize: menuTimerFontSize, weight: .bold)
     }
     
     static func menuReadyFont() -> NSFont {
