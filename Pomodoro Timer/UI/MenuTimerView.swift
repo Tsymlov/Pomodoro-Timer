@@ -26,13 +26,6 @@ final class MenuTimerView: NSView {
         static let timeFontSize: CGFloat = 24
     }
     
-    private enum Colors {
-        static let pomodoroColor = NSColor.systemRed
-        static let shortBreakColor = NSColor.systemBlue
-        static let longBreakColor = NSColor.systemPurple
-        static let completedColor = NSColor.systemGreen
-    }
-    
     // MARK: - Properties
     private let progressLayer = CAShapeLayer()
     private let backgroundLayer = CAShapeLayer()
@@ -186,17 +179,11 @@ final class MenuTimerView: NSView {
     
     private func progressColor(for store: Store) -> NSColor {
         if store.timerState == .completed {
-            return Colors.completedColor
+            return NSColor(Colors.completed)
         }
         
-        switch store.currentSession {
-        case .pomodoro:
-            return Colors.pomodoroColor
-        case .shortBreak:
-            return Colors.shortBreakColor
-        case .longBreak:
-            return Colors.longBreakColor
-        }
+        // Use existing color from SessionType extension
+        return NSColor(store.currentSession.color)
     }
 }
 

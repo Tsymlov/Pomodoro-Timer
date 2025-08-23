@@ -12,6 +12,7 @@ enum Colors {
     static let pomodoro = Color.accent
     static let shortBreak = Color.blue
     static let longBreak = Color.purple
+    static let completed = Color.green
 
     // MARK: - Button Colors
     static let resetButton = Color.orange
