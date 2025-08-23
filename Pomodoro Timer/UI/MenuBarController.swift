@@ -11,7 +11,7 @@ import SwiftUI
 import Combine
 
 @MainActor
-final class MenuBarController: ObservableObject {
+final class MenuBarController: NSObject, ObservableObject {
     // MARK: - Constants
 
     private enum Constants {
@@ -30,11 +30,14 @@ final class MenuBarController: ObservableObject {
     private let store: Store
     private var cancellables = Set<AnyCancellable>()
     private var updateTimer: Timer?
+    private var menuUpdateTimer: Timer?
+    private weak var currentMenuTimerView: MenuTimerView?
 
     // MARK: - Initialization
 
     init(store: Store) {
         self.store = store
+        super.init()
         setupMenuBar()
         setupObservers()
     }
@@ -42,6 +45,8 @@ final class MenuBarController: ObservableObject {
     deinit {
         updateTimer?.invalidate()
         updateTimer = nil
+        menuUpdateTimer?.invalidate()
+        menuUpdateTimer = nil
         statusItem = nil
     }
 
@@ -215,13 +220,14 @@ final class MenuBarController: ObservableObject {
     // MARK: - Menu Items
 
     private func addStatusItem(to menu: NSMenu) {
-        let statusItem = NSMenuItem(
-            title: statusText,
-            action: nil,
-            keyEquivalent: ""
-        )
-        statusItem.isEnabled = false
-        menu.addItem(statusItem)
+        // Create custom view for timer display
+        let timerView = MenuTimerView(store: store)
+        timerView.updateDisplay()
+        currentMenuTimerView = timerView
+        
+        let menuItem = NSMenuItem()
+        menuItem.view = timerView
+        menu.addItem(menuItem)
     }
 
     private func addTimerControls(to menu: NSMenu) {
@@ -293,25 +299,14 @@ final class MenuBarController: ObservableObject {
         NSMenuItem(title: title, action: action, keyEquivalent: keyEquivalent)
     }
 
-    // MARK: - Computed Properties
-
-    private var statusText: String {
-        switch store.timerState {
-        case .running:
-            return store.currentSession.displayName
-        case .paused:
-            return "\(store.currentSession.displayName) - Paused"
-        case .completed:
-            return "\(store.currentSession.displayName) - Completed!"
-        case .idle:
-            return "Ready to start"
-        }
-    }
-
     // MARK: - Actions
 
     @objc private func menuBarButtonClicked(_ sender: NSStatusBarButton) {
         let menu = createMenu()
+        
+        // Set delegate to track menu visibility
+        menu.delegate = self
+        
         statusItem?.menu = menu
         statusItem?.button?.performClick(nil)
         statusItem?.menu = nil
@@ -431,6 +426,55 @@ extension SessionType {
         case .longBreak:
             return "Long Break"
         }
+    }
+}
+
+// MARK: - NSMenuDelegate
+
+extension MenuBarController: NSMenuDelegate {
+    func menuWillOpen(_ menu: NSMenu) {
+        updateMenuTimerViewImmediately()
+        startMenuUpdateTimer()
+    }
+    
+    func menuDidClose(_ menu: NSMenu) {
+        stopMenuUpdateTimer()
+        clearMenuTimerView()
+    }
+    
+    // MARK: - Private Methods
+    
+    private func updateMenuTimerViewImmediately() {
+        currentMenuTimerView?.updateDisplay()
+    }
+    
+    private func startMenuUpdateTimer() {
+        menuUpdateTimer?.invalidate()
+        menuUpdateTimer = createMenuUpdateTimer()
+        addTimerToRunLoop()
+    }
+    
+    private func createMenuUpdateTimer() -> Timer {
+        Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
+            Task { @MainActor [weak self] in
+                self?.currentMenuTimerView?.updateDisplay()
+            }
+        }
+    }
+    
+    private func addTimerToRunLoop() {
+        if let timer = menuUpdateTimer {
+            RunLoop.main.add(timer, forMode: .common)
+        }
+    }
+    
+    private func stopMenuUpdateTimer() {
+        menuUpdateTimer?.invalidate()
+        menuUpdateTimer = nil
+    }
+    
+    private func clearMenuTimerView() {
+        currentMenuTimerView = nil
     }
 }
 
