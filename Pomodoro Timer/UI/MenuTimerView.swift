@@ -21,7 +21,6 @@ final class MenuTimerView: NSView {
         static let timeLabelHeight: CGFloat = 28
         static let viewWidth: CGFloat = 200
         static let viewHeight: CGFloat = 44
-        static let backgroundAlpha: CGFloat = 0.2
         static let readyFontSize: CGFloat = 20
         static let timeFontSize: CGFloat = 24
     }
@@ -75,7 +74,7 @@ final class MenuTimerView: NSView {
         backgroundLayer.frame = CGRect(x: 0, y: 0, width: Constants.progressSize, height: Constants.progressSize)
         backgroundLayer.path = createCirclePath(center: center, radius: radius)
         backgroundLayer.fillColor = NSColor(Colors.progressFillBackground).cgColor
-        backgroundLayer.strokeColor = NSColor(Colors.progressBackground).withAlphaComponent(Constants.backgroundAlpha).cgColor
+        backgroundLayer.strokeColor = NSColor(Colors.progressBackground).withAlphaComponent(Colors.progressBackgroundOpacity).cgColor
         backgroundLayer.lineWidth = Constants.lineWidth
         container.layer?.addSublayer(backgroundLayer)
     }
