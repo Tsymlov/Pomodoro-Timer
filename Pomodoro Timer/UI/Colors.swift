@@ -28,8 +28,10 @@ enum Colors {
     // MARK: - Background Colors
     #if os(macOS)
     static let appBackground = Color(NSColor.textBackgroundColor)
+    static let progressBackground = Color(NSColor.tertiaryLabelColor)
     #else
     static let appBackground = Color(UIColor.systemBackground)
+    static let progressBackground = Color(UIColor.tertiaryLabel)
     #endif
 
 }

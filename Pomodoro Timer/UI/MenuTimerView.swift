@@ -75,7 +75,7 @@ final class MenuTimerView: NSView {
         backgroundLayer.frame = CGRect(x: 0, y: 0, width: Constants.progressSize, height: Constants.progressSize)
         backgroundLayer.path = createCirclePath(center: center, radius: radius)
         backgroundLayer.fillColor = NSColor.clear.cgColor
-        backgroundLayer.strokeColor = NSColor.tertiaryLabelColor.withAlphaComponent(Constants.backgroundAlpha).cgColor
+        backgroundLayer.strokeColor = NSColor(Colors.progressBackground).withAlphaComponent(Constants.backgroundAlpha).cgColor
         backgroundLayer.lineWidth = Constants.lineWidth
         container.layer?.addSublayer(backgroundLayer)
     }
@@ -94,7 +94,7 @@ final class MenuTimerView: NSView {
         timeLabel.drawsBackground = false
         timeLabel.alignment = .left
         timeLabel.font = NSFont.monospacedDigitSystemFont(ofSize: Constants.timeFontSize, weight: .medium)
-        timeLabel.textColor = .labelColor
+        timeLabel.textColor = NSColor(Colors.primaryText)
         timeLabel.frame = NSRect(
             x: Constants.padding + Constants.progressSize + Constants.timeLabelSpacing,
             y: (frame.height - Constants.timeLabelHeight) / 2,
