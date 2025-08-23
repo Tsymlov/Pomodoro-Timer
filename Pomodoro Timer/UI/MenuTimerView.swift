@@ -142,18 +142,26 @@ final class MenuTimerView: NSView {
         if store.timerState == .idle {
             configureTimeLabelForIdleState()
         } else {
-            configureTimeLabelForActiveState(store.formattedTime)
+            configureTimeLabelForActiveState(store.formattedTime, store: store)
         }
     }
     
     private func configureTimeLabelForIdleState() {
         timeLabel.stringValue = "Ready"
         timeLabel.font = NSFont.systemFont(ofSize: Constants.readyFontSize, weight: .medium)
+        timeLabel.textColor = NSColor(Colors.secondaryText)
     }
     
-    private func configureTimeLabelForActiveState(_ time: String) {
+    private func configureTimeLabelForActiveState(_ time: String, store: Store) {
         timeLabel.stringValue = time
         timeLabel.font = NSFont.monospacedDigitSystemFont(ofSize: Constants.timeFontSize, weight: .medium)
+        
+        // Use session color for text
+        if store.timerState == .completed {
+            timeLabel.textColor = NSColor(Colors.completed)
+        } else {
+            timeLabel.textColor = NSColor(store.currentSession.color)
+        }
     }
     
     private func updateProgressIndicator(for store: Store) {
