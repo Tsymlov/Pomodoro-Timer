@@ -272,7 +272,7 @@ final class MenuBarController: NSObject, ObservableObject {
 
     private func addWindowControl(to menu: NSMenu) {
         menu.addItem(createMenuItem(
-            title: "Show Window",
+            title: "Show Pomodoro Timer",
             action: #selector(showMainWindow)
         ))
     }
