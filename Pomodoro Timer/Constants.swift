@@ -16,7 +16,7 @@ enum Constants {
     static let pomodorosUntilLongBreak = 4
     
     // MARK: - UI Sizes
-    static let menuBarIconSize: CGFloat = 18
+    static let menuBarIconSize: CGFloat = 16
     static let menuTimerViewWidth: CGFloat = 200
     static let menuTimerViewHeight: CGFloat = 44
     static let menuProgressSize: CGFloat = 24
