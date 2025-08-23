@@ -74,7 +74,7 @@ final class MenuTimerView: NSView {
         backgroundLayer.frame = CGRect(x: 0, y: 0, width: Constants.progressSize, height: Constants.progressSize)
         backgroundLayer.path = createCirclePath(center: center, radius: radius)
         backgroundLayer.fillColor = NSColor(Colors.progressFillBackground).cgColor
-        backgroundLayer.strokeColor = NSColor(Colors.progressBackground).withAlphaComponent(Colors.progressBackgroundOpacity).cgColor
+        // Will be set dynamically in updateDisplay based on current session
         backgroundLayer.lineWidth = Constants.lineWidth
         container.layer?.addSublayer(backgroundLayer)
     }
@@ -157,14 +157,21 @@ final class MenuTimerView: NSView {
     }
     
     private func updateProgressIndicator(for store: Store) {
-        progressLayer.strokeColor = progressColor(for: store).cgColor
-        
         CATransaction.begin()
         CATransaction.setDisableActions(true)
         
+        // Update background circle color to match current session
         if store.timerState == .idle {
+            // Use a subtle gray for idle state
+            backgroundLayer.strokeColor = NSColor.tertiaryLabelColor.withAlphaComponent(0.2).cgColor
             progressLayer.path = nil
         } else {
+            // Use session color for active states
+            backgroundLayer.strokeColor = NSColor(store.currentSession.progressBackgroundColor).cgColor
+            
+            // Update progress circle color
+            progressLayer.strokeColor = progressColor(for: store).cgColor
+            
             let progress = CGFloat(store.progress)
             progressLayer.path = createProgressPath(center: center, radius: radius, progress: progress)
         }
