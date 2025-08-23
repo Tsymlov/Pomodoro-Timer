@@ -16,7 +16,7 @@ enum Colors {
     
     // MARK: - Opacity Values
     static let sessionBackgroundOpacity = 0.1
-    static let progressBackgroundOpacity = 0.2
+    static let progressBackgroundOpacity = 0.4
     static let sessionBorderOpacity = 0.3
 
     // MARK: - Button Colors
