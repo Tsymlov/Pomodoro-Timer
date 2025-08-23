@@ -13,9 +13,9 @@ import SwiftUI
 final class MenuTimerView: NSView {
     // MARK: - Constants
     private enum Constants {
-        static let progressSize: CGFloat = 28
+        static let progressSize: CGFloat = 24
         static let padding: CGFloat = 16
-        static let lineWidth: CGFloat = 2.0
+        static let lineWidth: CGFloat = 3
         static let strokeInset: CGFloat = 3
         static let timeLabelSpacing: CGFloat = 12
         static let timeLabelHeight: CGFloat = 28
