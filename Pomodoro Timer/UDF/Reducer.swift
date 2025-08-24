@@ -179,6 +179,17 @@ private func startBreakSession(state: inout AppState, sessionType: SessionType) 
     state.timerState = .running
     state.currentSessionStartTime = Date()
     state.sessionEndTime = Date().addingTimeInterval(state.timeRemaining)
+    
+    // If starting a long break directly, update the cycle counter based on today's pomodoros
+    // Long break typically means completing a cycle of 4 pomodoros
+    if sessionType == .longBreak {
+        let todayPomodoros = state.statistics.todayStats.completedPomodoros
+        // Calculate what the cycle should be after this long break
+        // If we have 4, 8, 12... pomodoros, we're starting a new cycle
+        let cycleFromPomodoros = (todayPomodoros / Constants.pomodorosUntilLongBreak) + 1
+        // Use the higher value to ensure we don't go backwards
+        state.currentCycle = max(state.currentCycle, cycleFromPomodoros)
+    }
 }
 
 private func updateTimerProgress(state: inout AppState) {
