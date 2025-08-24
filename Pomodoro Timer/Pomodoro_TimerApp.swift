@@ -24,6 +24,10 @@ struct Pomodoro_TimerApp: App {
         #if os(macOS)
         self._menuBarController = StateObject(wrappedValue: MenuBarController(store: storeInstance))
         checkSingleInstance()
+        // Start the app in accessory mode (no Dock icon)
+        DispatchQueue.main.async {
+            NSApp.setActivationPolicy(.accessory)
+        }
         #endif
     }
 
@@ -34,8 +38,14 @@ struct Pomodoro_TimerApp: App {
                 #if os(macOS)
                 .frame(minWidth: 320, idealWidth: 320, maxWidth: 320,
                        minHeight: 460, idealHeight: 460, maxHeight: 460)
-                .onAppear {
-                    setupAppBehavior()
+                .onReceive(NotificationCenter.default.publisher(for: NSWindow.willCloseNotification)) { notification in
+                    if let window = notification.object as? NSWindow,
+                       window.isVisible {
+                        // When the main window closes, switch back to accessory mode
+                        DispatchQueue.main.async {
+                            NSApp.setActivationPolicy(.accessory)
+                        }
+                    }
                 }
                 #endif
         }
@@ -47,14 +57,6 @@ struct Pomodoro_TimerApp: App {
     }
 
     #if os(macOS)
-    private func setupAppBehavior() {
-        // Keep app running even when window is closed
-        // This allows the menu bar to stay active
-        DispatchQueue.main.async {
-            NSApp.setActivationPolicy(.accessory)
-        }
-    }
-
     private func checkSingleInstance() {
         let runningApps = NSWorkspace.shared.runningApplications
         let appBundleIdentifier = Bundle.main.bundleIdentifier ?? ""

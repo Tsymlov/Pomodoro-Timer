@@ -14,8 +14,8 @@ import Combine
 final class MenuBarController: NSObject, ObservableObject {
     // MARK: - Constants
 
-    private enum LocalConstants {
-        static let iconSize = NSSize(width: Constants.menuBarIconSize, height: Constants.menuBarIconSize)
+    private var iconSize: NSSize {
+        NSSize(width: Constants.menuBarIconSize, height: Constants.menuBarIconSize)
     }
 
     // MARK: - Properties
@@ -100,7 +100,7 @@ final class MenuBarController: NSObject, ObservableObject {
     // MARK: - Progress Image Creation
 
     private func createProgressImage(progress: Double) -> NSImage {
-        let image = NSImage(size: LocalConstants.iconSize, flipped: false) { [weak self] rect in
+        let image = NSImage(size: iconSize, flipped: false) { [weak self] rect in
             self?.drawProgressCircle(in: rect, progress: progress) ?? false
         }
         image.isTemplate = false
@@ -214,11 +214,10 @@ final class MenuBarController: NSObject, ObservableObject {
     // MARK: - Menu Items
 
     private func addStatusItem(to menu: NSMenu) {
-        // Create custom view for timer display
         let timerView = MenuTimerView(store: store)
         timerView.updateDisplay()
         currentMenuTimerView = timerView
-        
+
         let menuItem = NSMenuItem()
         menuItem.view = timerView
         menu.addItem(menuItem)
@@ -297,10 +296,8 @@ final class MenuBarController: NSObject, ObservableObject {
 
     @objc private func menuBarButtonClicked(_ sender: NSStatusBarButton) {
         let menu = createMenu()
-        
-        // Set delegate to track menu visibility
         menu.delegate = self
-        
+
         statusItem?.menu = menu
         statusItem?.button?.performClick(nil)
         statusItem?.menu = nil
@@ -334,9 +331,20 @@ final class MenuBarController: NSObject, ObservableObject {
 
     @objc private func showMainWindow() {
         Task { @MainActor in
-            activateApp()
-            showOrCreateMainWindow()
+            activateAppAndShowWindow()
         }
+    }
+
+    private func activateAppAndShowWindow() {
+        NSApp.setActivationPolicy(.regular)
+
+        if let window = findMainWindow() {
+            showWindow(window)
+        } else {
+            reopenApplication()
+        }
+
+        NSApp.activate(ignoringOtherApps: true)
     }
 
     @objc private func quitApp() {
@@ -344,19 +352,6 @@ final class MenuBarController: NSObject, ObservableObject {
     }
 
     // MARK: - Window Management
-
-    private func activateApp() {
-        NSApp.setActivationPolicy(.regular)
-        NSApp.activate(ignoringOtherApps: true)
-    }
-
-    private func showOrCreateMainWindow() {
-        if let window = findMainWindow() {
-            showWindow(window)
-        } else {
-            reopenApplication()
-        }
-    }
 
     private func findMainWindow() -> NSWindow? {
         NSApp.windows.first { window in
@@ -371,10 +366,10 @@ final class MenuBarController: NSObject, ObservableObject {
     }
 
     private func showWindow(_ window: NSWindow) {
+        window.setIsVisible(true)
         window.makeKeyAndOrderFront(nil)
         window.orderFrontRegardless()
         window.deminiaturize(nil)
-        window.setIsVisible(true)
     }
 
     private func reopenApplication() {
@@ -430,24 +425,22 @@ extension MenuBarController: NSMenuDelegate {
         updateMenuTimerViewImmediately()
         startMenuUpdateTimer()
     }
-    
+
     func menuDidClose(_ menu: NSMenu) {
         stopMenuUpdateTimer()
         clearMenuTimerView()
     }
-    
-    // MARK: - Private Methods
-    
+
     private func updateMenuTimerViewImmediately() {
         currentMenuTimerView?.updateDisplay()
     }
-    
+
     private func startMenuUpdateTimer() {
         menuUpdateTimer?.invalidate()
         menuUpdateTimer = createMenuUpdateTimer()
         addTimerToRunLoop()
     }
-    
+
     private func createMenuUpdateTimer() -> Timer {
         Timer.scheduledTimer(withTimeInterval: Constants.menuUpdateInterval, repeats: true) { [weak self] _ in
             Task { @MainActor [weak self] in
@@ -455,18 +448,18 @@ extension MenuBarController: NSMenuDelegate {
             }
         }
     }
-    
+
     private func addTimerToRunLoop() {
         if let timer = menuUpdateTimer {
             RunLoop.main.add(timer, forMode: .common)
         }
     }
-    
+
     private func stopMenuUpdateTimer() {
         menuUpdateTimer?.invalidate()
         menuUpdateTimer = nil
     }
-    
+
     private func clearMenuTimerView() {
         currentMenuTimerView = nil
     }
