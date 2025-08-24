@@ -15,6 +15,7 @@ struct Pomodoro_TimerApp: App {
     @StateObject private var store: Store
     #if os(macOS)
     @StateObject private var menuBarController: MenuBarController
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     #endif
 
     init() {
@@ -23,6 +24,10 @@ struct Pomodoro_TimerApp: App {
 
         #if os(macOS)
         self._menuBarController = StateObject(wrappedValue: MenuBarController(store: storeInstance))
+        
+        // Set up app delegate with store reference
+        AppDelegate.storeInstance = storeInstance
+        
         checkSingleInstance()
         // Start the app in accessory mode (no Dock icon)
         DispatchQueue.main.async {
@@ -77,3 +82,16 @@ struct Pomodoro_TimerApp: App {
     }
     #endif
 }
+
+#if os(macOS)
+// MARK: - AppDelegate
+
+class AppDelegate: NSObject, NSApplicationDelegate {
+    static var storeInstance: Store?
+    
+    func applicationWillTerminate(_ notification: Notification) {
+        // Save state and cancel all pending notifications when app terminates
+        AppDelegate.storeInstance?.saveStateAndCancelNotifications()
+    }
+}
+#endif

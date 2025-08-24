@@ -37,6 +37,12 @@ final class Store: ObservableObject {
         let shouldSaveImmediately = action.shouldSaveImmediately
         persistence.saveAppState(state, immediately: shouldSaveImmediately)
     }
+    
+    // MARK: - Public Methods
+    func saveStateAndCancelNotifications() {
+        persistence.saveAppState(state, immediately: true)
+        notifier.cancelAllNotifications()
+    }
 
     // MARK: - Timer Setup
     private func setupTimer() {
