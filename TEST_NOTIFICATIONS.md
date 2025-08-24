@@ -8,31 +8,39 @@
 - [ ] Let timer complete
 - [ ] Verify notification appears
 
-### 2. Pause Timer
+### 2. Pause Timer ✅
 - [ ] Start a Pomodoro session
 - [ ] Pause the timer
 - [ ] Verify notification is cancelled (check Notification Center)
 - [ ] Resume timer
 - [ ] Verify notification is rescheduled
 
-### 3. Reset Timer
+### 3. Reset Timer ✅
 - [ ] Start a Pomodoro session
 - [ ] Reset the timer
 - [ ] Verify notification is cancelled
 
-### 4. App Termination
+### 4. App Termination ✅
 - [ ] Start a Pomodoro session
 - [ ] Quit the app (Cmd+Q or menu)
 - [ ] Verify notification is cancelled
 - [ ] Check that no notification appears after the timer would have completed
 
-### 5. Window Closing (macOS)
+### 5. Session Switching ✅
+- [ ] Start a Pomodoro session
+- [ ] Switch to Short Break (from menu)
+- [ ] Verify previous notification is cancelled
+- [ ] Start a Pomodoro session
+- [ ] Skip to break
+- [ ] Verify previous notification is cancelled
+
+### 6. Window Closing (macOS)
 - [ ] Start a Pomodoro session
 - [ ] Close the main window (app remains in menu bar)
 - [ ] Verify timer continues and notification remains scheduled
 - [ ] Verify notification appears when timer completes
 
-### 6. Background/Foreground (if applicable)
+### 7. Background/Foreground (if applicable)
 - [ ] Start a Pomodoro session
 - [ ] Hide the app
 - [ ] Verify notification remains scheduled

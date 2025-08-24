@@ -65,6 +65,11 @@ final class Store: ObservableObject {
         case .pause, .stop, .reset:
             timer.stop()
             notifier.cancelAllNotifications()
+            
+        case .skipToBreak, .skipToPomodoro, .startShortBreak, .startLongBreak:
+            // Cancel any existing notifications when switching sessions
+            timer.stop()
+            notifier.cancelAllNotifications()
 
         case .complete, .updateBackgroundTime:
             // Check if session just completed
