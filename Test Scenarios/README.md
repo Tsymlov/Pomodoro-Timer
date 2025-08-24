@@ -77,6 +77,7 @@ Tests for statistics display including:
 1. **Manual Long Break**: Completes cycle regardless of pomodoro count
 2. **Day Boundary**: Statistics reset but notifications might persist
 3. **Background Mode**: Timer continues but display may not update
+4. **Range Crash (Fixed)**: App was crashing when completing first pomodoro of the day due to invalid range 1...0 when longBreaks = 0
 
 ## How to Report Issues
 

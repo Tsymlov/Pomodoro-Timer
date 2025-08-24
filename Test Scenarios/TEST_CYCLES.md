@@ -36,6 +36,14 @@
 - [ ] Verify cycle updates correctly
 - [ ] After break, should continue appropriately
 
+### 6. First Pomodoro of the Day (Range Crash Bug)
+- [ ] Start app fresh (no pomodoros completed today)
+- [ ] Complete first Pomodoro
+- [ ] Click "Next Session" button
+- [ ] Verify app doesn't crash (was crashing with range 1...0)
+- [ ] Verify display shows "1×" for completed pomodoro
+- [ ] Verify Short Break is offered (not Long Break)
+
 ## Expected Behavior
 
 ### Cycle Counter Rules:
