@@ -2,31 +2,31 @@
 
 ## Test Scenarios
 
-### 1. Normal Timer Operation
+### TC-NOTIF-001: Normal Timer Operation
 - [ ] Start a Pomodoro session
 - [ ] Verify notification is scheduled (check Notification Center)
 - [ ] Let timer complete
 - [ ] Verify notification appears
 
-### 2. Pause Timer ✅
+### TC-NOTIF-002: Pause Timer ✅
 - [ ] Start a Pomodoro session
 - [ ] Pause the timer
 - [ ] Verify notification is cancelled (check Notification Center)
 - [ ] Resume timer
 - [ ] Verify notification is rescheduled
 
-### 3. Reset Timer ✅
+### TC-NOTIF-003: Reset Timer ✅
 - [ ] Start a Pomodoro session
 - [ ] Reset the timer
 - [ ] Verify notification is cancelled
 
-### 4. App Termination ✅
+### TC-NOTIF-004: App Termination ✅
 - [ ] Start a Pomodoro session
 - [ ] Quit the app (Cmd+Q or menu)
 - [ ] Verify notification is cancelled
 - [ ] Check that no notification appears after the timer would have completed
 
-### 5. Session Switching ✅
+### TC-NOTIF-005: Session Switching ✅
 - [ ] Start a Pomodoro session
 - [ ] Switch to Short Break (from menu)
 - [ ] Verify previous notification is cancelled
@@ -34,13 +34,13 @@
 - [ ] Skip to break
 - [ ] Verify previous notification is cancelled
 
-### 6. Window Closing (macOS)
+### TC-NOTIF-006: Window Closing (macOS)
 - [ ] Start a Pomodoro session
 - [ ] Close the main window (app remains in menu bar)
 - [ ] Verify timer continues and notification remains scheduled
 - [ ] Verify notification appears when timer completes
 
-### 7. Background/Foreground (if applicable)
+### TC-NOTIF-007: Background/Foreground (if applicable)
 - [ ] Start a Pomodoro session
 - [ ] Hide the app
 - [ ] Verify notification remains scheduled

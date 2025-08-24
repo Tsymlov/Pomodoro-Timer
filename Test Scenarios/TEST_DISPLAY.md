@@ -5,47 +5,47 @@ The display shows completed pomodoros as: `n×` where n is the number of pomodor
 
 ## Test Scenarios
 
-### Scenario 1: Fresh Start
+### TC-DISP-001: Fresh Start
 - **State**: No pomodoros completed today
 - **Expected Display**: Nothing (empty string)
 - **Cycle Counter**: 1
 
-### Scenario 2: First Pomodoros
+### TC-DISP-002: First Pomodoros
 - **State**: 2 pomodoros completed, no long breaks
 - **Expected Display**: `2×`
 - **Cycle Counter**: 1
 
-### Scenario 3: Full First Cycle
+### TC-DISP-003: Full First Cycle
 - **State**: 4 pomodoros completed, no long breaks yet
 - **Expected Display**: `4×`
 - **Cycle Counter**: 1
 - **Note**: Should offer Long Break
 
-### Scenario 4: After First Long Break
+### TC-DISP-004: After First Long Break
 - **State**: 4 pomodoros, 1 long break completed
 - **Expected Display**: `4×`
 - **Cycle Counter**: 2
 - **Note**: First cycle complete, now in cycle 2
 
-### Scenario 5: Mid Second Cycle
+### TC-DISP-005: Mid Second Cycle
 - **State**: 6 pomodoros, 1 long break
 - **Expected Display**: `4× 2×`
 - **Cycle Counter**: 2
 - **Note**: Shows 4 from cycle 1, 2 from current cycle 2
 
-### Scenario 6: Manual Long Break Early
+### TC-DISP-006: Manual Long Break Early
 - **State**: 2 pomodoros, then manual Long Break
 - **Expected Display**: `2×`
 - **Cycle Counter**: 2
 - **Note**: Even with only 2 pomodoros, manual Long Break completes the cycle
 
-### Scenario 7: Multiple Cycles
+### TC-DISP-007: Multiple Cycles
 - **State**: 9 pomodoros, 2 long breaks
 - **Expected Display**: `4× 4× 1×`
 - **Cycle Counter**: 3
 - **Note**: Two complete cycles of 4, plus 1 in current cycle
 
-### Scenario 8: Uneven Cycles (Manual Breaks)
+### TC-DISP-008: Uneven Cycles (Manual Breaks)
 - **State**: User did: 2 pomodoros → Long Break → 3 pomodoros → Long Break → 1 pomodoro
 - **Total**: 6 pomodoros, 2 long breaks
 - **Expected Display**: `2× 3× 1×`

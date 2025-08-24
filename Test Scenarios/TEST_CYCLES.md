@@ -2,7 +2,7 @@
 
 ## Test Scenarios for Cycle Management
 
-### 1. Normal Cycle Progression
+### TC-CYC-001: Normal Cycle Progression
 - [ ] Complete 1st Pomodoro → Should offer Short Break (Cycle 1)
 - [ ] Complete 2nd Pomodoro → Should offer Short Break (Cycle 1)
 - [ ] Complete 3rd Pomodoro → Should offer Short Break (Cycle 1)
@@ -10,33 +10,33 @@
 - [ ] After Long Break → Should start Cycle 2
 - [ ] Complete 5th Pomodoro → Should offer Short Break (Cycle 2)
 
-### 2. Direct Long Break Selection
+### TC-CYC-002: Direct Long Break Selection
 - [ ] Start the app fresh (Cycle 1)
 - [ ] Select "Start Long Break" from menu
 - [ ] Verify cycle counter updates appropriately
 - [ ] Next Pomodoro should be in the correct cycle
 
-### 3. Daily Reset
+### TC-CYC-003: Daily Reset
 - [ ] Complete several cycles on Day 1
 - [ ] Close and reopen app on Day 2
 - [ ] Verify cycle resets to 1
 - [ ] First Pomodoro of Day 2 → Should offer Short Break
 - [ ] 4th Pomodoro of Day 2 → Should offer Long Break
 
-### 4. Mid-Day App Restart
+### TC-CYC-004: Mid-Day App Restart
 - [ ] Complete 2 Pomodoros (in Cycle 1)
 - [ ] Close and restart the app
 - [ ] Verify still in Cycle 1
 - [ ] Complete 3rd Pomodoro → Should offer Short Break
 - [ ] Complete 4th Pomodoro → Should offer Long Break
 
-### 5. Manual Break Selection Logic
+### TC-CYC-005: Manual Break Selection Logic
 - [ ] Complete 3 Pomodoros
 - [ ] Manually select "Start Long Break"
 - [ ] Verify cycle updates correctly
 - [ ] After break, should continue appropriately
 
-### 6. First Pomodoro of the Day (Range Crash Bug)
+### TC-CYC-006: First Pomodoro of the Day (Range Crash Bug)
 - [ ] Start app fresh (no pomodoros completed today)
 - [ ] Complete first Pomodoro
 - [ ] Click "Next Session" button

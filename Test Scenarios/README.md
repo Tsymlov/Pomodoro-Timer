@@ -6,24 +6,29 @@ This folder contains comprehensive test scenarios for different aspects of the P
 
 ### 1. [Notifications Testing](TEST_NOTIFICATIONS.md)
 Tests for notification system behavior including:
-- Timer completion notifications
+- Timer completion notifications (TC-NOTIF-001 to TC-NOTIF-007)
 - Notification cancellation on pause/reset
 - App termination handling
 - Session switching behavior
 
 ### 2. [Cycle Management Testing](TEST_CYCLES.md)
 Tests for cycle counting logic including:
-- Normal cycle progression
+- Normal cycle progression (TC-CYC-001 to TC-CYC-006)
 - Manual long break selection
 - Daily reset behavior
 - Cycle calculation rules
 
 ### 3. [Display Testing](TEST_DISPLAY.md)
 Tests for statistics display including:
-- Cycle counter display
+- Cycle counter display (TC-DISP-001 to TC-DISP-008)
 - Pomodoro count formatting
 - Visual indicators
 - Edge cases and day boundaries
+
+## Test Case ID Format
+- **TC-NOTIF-XXX**: Notification test cases
+- **TC-CYC-XXX**: Cycle management test cases
+- **TC-DISP-XXX**: Display test cases
 
 ## General Testing Guidelines
 
