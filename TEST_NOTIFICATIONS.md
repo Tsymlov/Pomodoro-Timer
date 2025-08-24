@@ -60,6 +60,8 @@
   - Timer is paused
   - Timer is reset
   - App is terminated (Quit)
+  - Session is switched (Skip to Break, Skip to Pomodoro)
+  - Break is started directly from menu (Start Short/Long Break)
   
 - Notifications should remain scheduled when:
   - Window is closed but app remains in menu bar
