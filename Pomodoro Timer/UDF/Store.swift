@@ -78,6 +78,9 @@ final class Store: ObservableObject {
             }
 
         case .enterForeground:
+            // Check if it's a new day and reset cycle if needed
+            checkAndResetDailyCycle()
+            
             // Update notifications when returning from background if needed
             if state.timerState == .running {
                 notifier.cancelAllNotifications()
@@ -105,11 +108,25 @@ final class Store: ObservableObject {
         // Try to load saved state, or use default with loaded settings
         if let savedState = persistence.loadAppState() {
             state = savedState
+            // Recalculate current cycle based on today's pomodoros
+            state.currentCycle = calculateCurrentCycle(for: state.statistics)
         } else {
             // Load just settings if no full state exists
             state.settings = persistence.loadSettings()
             state.timeRemaining = state.getCurrentSessionDuration()
+            state.currentCycle = 1
         }
+    }
+    
+    private func calculateCurrentCycle(for statistics: TimerStatistics) -> Int {
+        let todayPomodoros = statistics.todayStats.completedPomodoros
+        return (todayPomodoros / Constants.pomodorosUntilLongBreak) + 1
+    }
+    
+    private func checkAndResetDailyCycle() {
+        // Recalculate current cycle based on today's stats
+        // This ensures cycle resets at the start of a new day
+        state.currentCycle = calculateCurrentCycle(for: state.statistics)
     }
 
     // MARK: - Notifications

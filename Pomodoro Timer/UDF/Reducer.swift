@@ -151,7 +151,9 @@ private func moveToNextSession(state: inout AppState) {
     switch state.currentSession {
     case .pomodoro:
         // After pomodoro comes break
-        if state.statistics.completedPomodoros % Constants.pomodorosUntilLongBreak == 0 {
+        // Use today's pomodoros count to determine break type
+        let todayPomodoros = state.statistics.todayStats.completedPomodoros
+        if todayPomodoros > 0 && todayPomodoros % Constants.pomodorosUntilLongBreak == 0 {
             state.currentSession = .longBreak
             state.currentCycle += 1
         } else {
