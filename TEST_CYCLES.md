@@ -40,15 +40,20 @@
 
 ### Cycle Counter Rules:
 1. **Start of day**: Always begins at Cycle 1
-2. **After 4 Pomodoros**: Automatically suggests Long Break and moves to next cycle
-3. **Manual Long Break**: Updates cycle based on today's completed Pomodoros
-4. **App restart (same day)**: Preserves cycle position based on today's Pomodoros
+2. **Cycle completion**: A cycle is considered complete when:
+   - 4 Pomodoros are completed and Long Break is started automatically, OR
+   - User manually starts a Long Break (via menu)
+3. **After Long Break**: New cycle begins (counter increments)
+4. **App restart (same day)**: Cycle = Number of completed Long Breaks today + 1
 5. **App restart (new day)**: Resets to Cycle 1
 
 ### Cycle Calculation Formula:
 ```
-Current Cycle = (Today's Completed Pomodoros / 4) + 1
+Current Cycle = Today's Completed Long Breaks + 1
 ```
+
+### Important Note:
+The cycle counter increments when a Long Break STARTS, not when pomodoros are completed. This means manually selecting "Start Long Break" will complete the current cycle regardless of how many pomodoros were done.
 
 ### Visual Indicator:
 The timer should display cycles as filled/empty circles:

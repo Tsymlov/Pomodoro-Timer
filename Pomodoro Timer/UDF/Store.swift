@@ -119,8 +119,10 @@ final class Store: ObservableObject {
     }
     
     private func calculateCurrentCycle(for statistics: TimerStatistics) -> Int {
-        let todayPomodoros = statistics.todayStats.completedPomodoros
-        return (todayPomodoros / Constants.pomodorosUntilLongBreak) + 1
+        // Current cycle is based on how many complete cycles (4 pomodoros each) we've done today
+        // Plus 1 for the current incomplete cycle
+        let completedCyclesCount = statistics.todayStats.completedLongBreaks
+        return completedCyclesCount + 1
     }
     
     private func checkAndResetDailyCycle() {
@@ -189,22 +191,31 @@ extension Store {
     /// Returns a string displaying today's pomodoros organized by cycles
     var todayPomodorosCyclesDisplay: String {
         let completedPomodoros = state.statistics.todayStats.completedPomodoros
-        return pomodorosCyclesString(for: completedPomodoros)
+        let completedLongBreaks = state.statistics.todayStats.completedLongBreaks
+        return pomodorosCyclesString(for: completedPomodoros, longBreaks: completedLongBreaks, currentCycle: state.currentCycle)
     }
 
-    /// Formats a cycles string for the given number of completed pomodoros
-    private func pomodorosCyclesString(for completedPomodoros: Int) -> String {
-        let fullCycles = completedPomodoros / Constants.pomodorosUntilLongBreak
-        let remainingPomodoros = completedPomodoros % Constants.pomodorosUntilLongBreak
-
+    /// Formats a cycles string for the given number of completed pomodoros and cycles
+    private func pomodorosCyclesString(for completedPomodoros: Int, longBreaks: Int, currentCycle: Int) -> String {
+        guard completedPomodoros > 0 else { return "" }
+        
         var cycleStrings: [String] = []
-
-        // Add complete cycles
-        for _ in 0..<fullCycles {
-            cycleStrings.append("\(Constants.pomodorosUntilLongBreak)×")
+        var pomodorosAccountedFor = 0
+        
+        // Add completed cycles (those with long breaks)
+        for cycleNum in 1...longBreaks {
+            // For completed cycles, we assume they had full pomodoros
+            // unless it's the last completed cycle and we have fewer pomodoros remaining
+            let pomodorosInThisCycle = min(Constants.pomodorosUntilLongBreak, 
+                                          completedPomodoros - pomodorosAccountedFor)
+            if pomodorosInThisCycle > 0 {
+                cycleStrings.append("\(pomodorosInThisCycle)×")
+                pomodorosAccountedFor += pomodorosInThisCycle
+            }
         }
-
-        // Add current incomplete cycle if there are pomodoros
+        
+        // Add pomodoros in current incomplete cycle
+        let remainingPomodoros = completedPomodoros - pomodorosAccountedFor
         if remainingPomodoros > 0 {
             cycleStrings.append("\(remainingPomodoros)×")
         }
