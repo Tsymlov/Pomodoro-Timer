@@ -88,15 +88,23 @@ private enum Constants {
 - **Data Persistence**: Settings and statistics saved to UserDefaults
 - **Cross-Platform**: Conditional compilation for iOS/macOS differences
 
+## Testing
+
+Comprehensive test scenarios are available in the [Test Scenarios](Test%20Scenarios/) folder:
+- [Notification Testing](Test%20Scenarios/TEST_NOTIFICATIONS.md)
+- [Cycle Management Testing](Test%20Scenarios/TEST_CYCLES.md)
+- [Display Testing](Test%20Scenarios/TEST_DISPLAY.md)
+
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
 
 1. Fork the project
 2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+3. Run the test scenarios to ensure everything works
+4. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+5. Push to the branch (`git push origin feature/AmazingFeature`)
+6. Open a Pull Request
 
 ## License
 
