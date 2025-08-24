@@ -203,16 +203,23 @@ extension Store {
         var pomodorosAccountedFor = 0
         
         // Add completed cycles (those with long breaks)
-        if longBreaks > 0 {
-            for _ in 1...longBreaks {
-                // For completed cycles, we assume they had full pomodoros
-                // unless it's the last completed cycle and we have fewer pomodoros remaining
-                let pomodorosInThisCycle = min(Constants.pomodorosUntilLongBreak, 
-                                              completedPomodoros - pomodorosAccountedFor)
-                if pomodorosInThisCycle > 0 {
-                    cycleStrings.append("\(pomodorosInThisCycle)×")
-                    pomodorosAccountedFor += pomodorosInThisCycle
-                }
+        guard longBreaks > 0 else {
+            // No completed cycles yet, skip to current cycle handling
+            let remainingPomodoros = completedPomodoros - pomodorosAccountedFor
+            if remainingPomodoros > 0 {
+                return "\(remainingPomodoros)×"
+            }
+            return ""
+        }
+        
+        for _ in 1...longBreaks {
+            // For completed cycles, we assume they had full pomodoros
+            // unless it's the last completed cycle and we have fewer pomodoros remaining
+            let pomodorosInThisCycle = min(Constants.pomodorosUntilLongBreak, 
+                                          completedPomodoros - pomodorosAccountedFor)
+            if pomodorosInThisCycle > 0 {
+                cycleStrings.append("\(pomodorosInThisCycle)×")
+                pomodorosAccountedFor += pomodorosInThisCycle
             }
         }
         
