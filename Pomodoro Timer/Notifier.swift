@@ -22,13 +22,15 @@ final class Notifier {
     }
 
     func scheduleNotification(for sessionType: SessionType, in timeInterval: TimeInterval) {
+        cancelAllNotifications()
+        
         let content = UNMutableNotificationContent()
         content.title = "Pomodoro Timer"
         content.body = "\(sessionType.title) completed! \(sessionType.emoji)"
         content.sound = .default
 
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: timeInterval, repeats: false)
-        let request = UNNotificationRequest(identifier: "pomodoro-\(UUID())", content: content, trigger: trigger)
+        let request = UNNotificationRequest(identifier: "session-completion", content: content, trigger: trigger)
 
         UNUserNotificationCenter.current().add(request)
     }

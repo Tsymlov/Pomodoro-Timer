@@ -67,23 +67,18 @@ final class Store: ObservableObject {
             notifier.cancelAllNotifications()
             
         case .skipToBreak, .skipToPomodoro, .startShortBreak, .startLongBreak:
-            // Cancel any existing notifications when switching sessions
             timer.stop()
             notifier.cancelAllNotifications()
 
         case .complete, .updateBackgroundTime:
-            // Check if session just completed
             if previousState.timerState == .running && state.timerState == .completed {
                 handleSessionCompletion()
             }
 
         case .enterForeground:
-            // Check if it's a new day and reset cycle if needed
             checkAndResetDailyCycle()
             
-            // Update notifications when returning from background if needed
             if state.timerState == .running {
-                notifier.cancelAllNotifications()
                 scheduleNotificationForCurrentSession()
             }
 
@@ -97,21 +92,15 @@ final class Store: ObservableObject {
 
     // MARK: - Session Management
     private func handleSessionCompletion() {
-        // Don't stop timer - let it continue for overtime display
-        notifier.cancelAllNotifications()
-        scheduleCompletionNotification()
-        // Don't auto-transition - let user see overtime
+        // Timer continues for overtime display
     }
 
     // MARK: - State Management
     private func loadState() {
-        // Try to load saved state, or use default with loaded settings
         if let savedState = persistence.loadAppState() {
             state = savedState
-            // Recalculate current cycle based on today's pomodoros
             state.currentCycle = calculateCurrentCycle(for: state.statistics)
         } else {
-            // Load just settings if no full state exists
             state.settings = persistence.loadSettings()
             state.timeRemaining = state.getCurrentSessionDuration()
             state.currentCycle = 1
@@ -119,15 +108,11 @@ final class Store: ObservableObject {
     }
     
     private func calculateCurrentCycle(for statistics: TimerStatistics) -> Int {
-        // Current cycle is based on how many complete cycles (4 pomodoros each) we've done today
-        // Plus 1 for the current incomplete cycle
         let completedCyclesCount = statistics.todayStats.completedLongBreaks
         return completedCyclesCount + 1
     }
     
     private func checkAndResetDailyCycle() {
-        // Recalculate current cycle based on today's stats
-        // This ensures cycle resets at the start of a new day
         state.currentCycle = calculateCurrentCycle(for: state.statistics)
     }
 
@@ -136,13 +121,6 @@ final class Store: ObservableObject {
         notifier.scheduleNotification(
             for: state.currentSession,
             in: state.timeRemaining
-        )
-    }
-
-    private func scheduleCompletionNotification() {
-        notifier.scheduleNotification(
-            for: state.currentSession,
-            in: 0.1
         )
     }
 
