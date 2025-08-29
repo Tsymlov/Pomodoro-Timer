@@ -20,6 +20,7 @@ struct AppState: Equatable, Codable {
     var allGoals: [SessionGoal] = []
     var sessionEndTime: Date?
     var backgroundTime: Date?
+    var pausedTimeRemaining: TimeInterval?
 
     // MARK: - Computed Properties
     var progress: Double {

@@ -18,13 +18,18 @@ func reducer(state: inout AppState, action: Action) {
     case .resume:
         guard state.timerState == .paused else { return }
         state.timerState = .running
-        state.sessionEndTime = Date().addingTimeInterval(state.timeRemaining)
+        
+        let timeToResume = state.pausedTimeRemaining ?? state.timeRemaining
+        state.timeRemaining = timeToResume
+        state.sessionEndTime = Date().addingTimeInterval(timeToResume)
+        state.pausedTimeRemaining = nil
 
     case .stop:
         recordCurrentSession(state: &state, wasCompleted: false)
         state.timerState = .idle
         state.timeRemaining = state.getCurrentSessionDuration()
         state.currentSessionStartTime = nil
+        state.pausedTimeRemaining = nil
 
     case .reset:
         recordCurrentSession(state: &state, wasCompleted: false)
@@ -32,10 +37,12 @@ func reducer(state: inout AppState, action: Action) {
         state.timeRemaining = state.getCurrentSessionDuration()
         state.statistics.currentStreak = 0
         state.currentSessionStartTime = nil
+        state.pausedTimeRemaining = nil
 
     case .pause:
         guard state.canPause else { return }
         state.timerState = .paused
+        state.pausedTimeRemaining = state.timeRemaining
         state.sessionEndTime = nil
 
     case .enterBackground:
@@ -150,8 +157,6 @@ private func updateStatisticsForCompletion(state: inout AppState) {
 private func moveToNextSession(state: inout AppState) {
     switch state.currentSession {
     case .pomodoro:
-        // After pomodoro comes break
-        // Use today's pomodoros count to determine break type
         let todayPomodoros = state.statistics.todayStats.completedPomodoros
         if todayPomodoros > 0 && todayPomodoros % Constants.pomodorosUntilLongBreak == 0 {
             state.currentSession = .longBreak
@@ -160,7 +165,6 @@ private func moveToNextSession(state: inout AppState) {
             state.currentSession = .shortBreak
         }
     case .shortBreak, .longBreak:
-        // After break comes pomodoro
         state.currentSession = .pomodoro
     }
 
@@ -180,29 +184,25 @@ private func startBreakSession(state: inout AppState, sessionType: SessionType) 
     state.currentSessionStartTime = Date()
     state.sessionEndTime = Date().addingTimeInterval(state.timeRemaining)
     
-    // If starting a long break, the current cycle is considered complete
-    // Increment the cycle counter to start a new cycle after this break
     if sessionType == .longBreak {
         state.currentCycle += 1
     }
 }
 
 private func updateTimerProgress(state: inout AppState) {
-    // Allow updates in both running and completed states
-    guard state.timerState == .running || state.timerState == .completed,
-          let endTime = state.sessionEndTime else { return }
+    guard state.timerState == .running || state.timerState == .completed else { return }
+    guard let endTime = state.sessionEndTime else { return }
 
     let now = Date()
 
-    if state.timerState == .running && now >= endTime {
-        // Session just completed
-        recordCurrentSession(state: &state, wasCompleted: true)
-        updateStatisticsForCompletion(state: &state)
-        state.timerState = .completed
-        state.timeRemaining = 0
-    } else if state.timerState == .running {
-        // Update remaining time during countdown
-        state.timeRemaining = endTime.timeIntervalSince(now)
+    if state.timerState == .running {
+        if now >= endTime {
+            recordCurrentSession(state: &state, wasCompleted: true)
+            updateStatisticsForCompletion(state: &state)
+            state.timerState = .completed
+            state.timeRemaining = 0
+        } else {
+            state.timeRemaining = endTime.timeIntervalSince(now)
+        }
     }
-    // In completed state, formattedTime will calculate elapsed time from startTime
 }
