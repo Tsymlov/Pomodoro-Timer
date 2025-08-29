@@ -159,12 +159,14 @@ private func moveToNextSession(state: inout AppState) {
         let todayPomodoros = state.statistics.todayStats.completedPomodoros
         if todayPomodoros > 0 && todayPomodoros % Constants.pomodorosUntilLongBreak == 0 {
             state.currentSession = .longBreak
-            state.currentCycle += 1
         } else {
             state.currentSession = .shortBreak
         }
-    case .shortBreak, .longBreak:
+    case .shortBreak:
         state.currentSession = .pomodoro
+    case .longBreak:
+        state.currentSession = .pomodoro
+        state.currentCycle += 1
     }
 
     state.timeRemaining = state.getCurrentSessionDuration()
@@ -182,10 +184,6 @@ private func startBreakSession(state: inout AppState, sessionType: SessionType) 
     state.timerState = .running
     state.currentSessionStartTime = Date()
     state.sessionEndTime = Date().addingTimeInterval(state.timeRemaining)
-    
-    if sessionType == .longBreak {
-        state.currentCycle += 1
-    }
 }
 
 private func updateTimerProgress(state: inout AppState) {

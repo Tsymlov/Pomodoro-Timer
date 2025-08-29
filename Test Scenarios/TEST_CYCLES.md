@@ -13,8 +13,10 @@
 ### TC-CYC-002: Direct Long Break Selection
 - [ ] Start the app fresh (Cycle 1)
 - [ ] Select "Start Long Break" from menu
-- [ ] Verify cycle counter updates appropriately
-- [ ] Next Pomodoro should be in the correct cycle
+- [ ] Verify cycle counter REMAINS at 1 (doesn't increment yet)
+- [ ] Complete or skip the long break
+- [ ] Verify cycle counter increments to 2 AFTER long break ends
+- [ ] Next Pomodoro should be in Cycle 2
 
 ### TC-CYC-003: Daily Reset
 - [ ] Complete several cycles on Day 1
@@ -31,10 +33,12 @@
 - [ ] Complete 4th Pomodoro → Should offer Long Break
 
 ### TC-CYC-005: Manual Break Selection Logic
-- [ ] Complete 3 Pomodoros
+- [ ] Complete 3 Pomodoros (still in Cycle 1)
 - [ ] Manually select "Start Long Break"
-- [ ] Verify cycle updates correctly
-- [ ] After break, should continue appropriately
+- [ ] Verify cycle REMAINS at 1 during long break
+- [ ] Complete the long break
+- [ ] Verify cycle increments to 2 after long break completion
+- [ ] Next session should be Pomodoro in Cycle 2
 
 ### TC-CYC-006: First Pomodoro of the Day (Range Crash Bug)
 - [ ] Start app fresh (no pomodoros completed today)
@@ -49,11 +53,12 @@
 ### Cycle Counter Rules:
 1. **Start of day**: Always begins at Cycle 1
 2. **Cycle completion**: A cycle is considered complete when:
-   - 4 Pomodoros are completed and Long Break is started automatically, OR
-   - User manually starts a Long Break (via menu)
-3. **After Long Break**: New cycle begins (counter increments)
-4. **App restart (same day)**: Cycle = Number of completed Long Breaks today + 1
-5. **App restart (new day)**: Resets to Cycle 1
+   - Long Break session ENDS (not when it starts)
+   - This happens after transitioning FROM long break TO pomodoro
+3. **During Long Break**: Cycle counter remains unchanged
+4. **After Long Break ends**: New cycle begins (counter increments)
+5. **App restart (same day)**: Cycle = Number of completed Long Breaks today + 1
+6. **App restart (new day)**: Resets to Cycle 1
 
 ### Cycle Calculation Formula:
 ```
@@ -61,7 +66,10 @@ Current Cycle = Today's Completed Long Breaks + 1
 ```
 
 ### Important Note:
-The cycle counter increments when a Long Break STARTS, not when pomodoros are completed. This means manually selecting "Start Long Break" will complete the current cycle regardless of how many pomodoros were done.
+The cycle counter increments when a Long Break ENDS, not when it starts. This means:
+- Starting a long break does NOT increment the cycle
+- Completing/finishing a long break increments the cycle
+- The new cycle begins when transitioning FROM long break TO pomodoro
 
 ### Visual Indicator:
 The timer should display cycles as filled/empty circles:

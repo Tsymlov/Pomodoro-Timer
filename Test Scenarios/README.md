@@ -50,8 +50,9 @@ Tests for statistics display including:
 ## Key Behaviors to Verify
 
 ### Cycle Logic
-- **Cycle completes when**: Long break starts (automatic or manual)
-- **Current cycle formula**: `Today's Long Breaks + 1`
+- **Cycle completes when**: Long break ENDS (not when it starts)
+- **Cycle increments**: When transitioning FROM long break TO pomodoro
+- **Current cycle formula**: `Today's Completed Long Breaks + 1`
 - **Daily reset**: Cycles reset to 1 at start of new day
 
 ### Notifications
@@ -77,12 +78,15 @@ Tests for statistics display including:
 | App Restart | ✓ | ✓ | ✓ |
 | New Day | ✓ | ✓ | ✓ |
 
-## Known Issues & Edge Cases
+## Known Issues & Edge Cases (Fixed)
 
-1. **Manual Long Break**: Completes cycle regardless of pomodoro count
-2. **Day Boundary**: Statistics reset but notifications might persist
+1. ~~**Manual Long Break**: Completes cycle regardless of pomodoro count~~ ✅ Fixed: Cycle increments only after long break ends
+2. ~~**Day Boundary**: Statistics reset but notifications might persist~~ ✅ Fixed: Notifications properly managed
 3. **Background Mode**: Timer continues but display may not update
-4. **Range Crash (Fixed)**: App was crashing when completing first pomodoro of the day due to invalid range 1...0 when longBreaks = 0
+4. ~~**Range Crash**: App was crashing when completing first pomodoro of the day due to invalid range 1...0 when longBreaks = 0~~ ✅ Fixed
+5. ~~**Duplicate Notifications**: Multiple notifications were scheduled for same event~~ ✅ Fixed: Using single identifier
+6. ~~**Pause/Resume Timer**: Time was incorrectly calculated after pause~~ ✅ Fixed: Preserving time during pause
+7. ~~**Skip to Break Counting**: Pomodoros were counted even when skipping to break~~ ✅ Fixed: Only count completed pomodoros
 
 ## How to Report Issues
 
