@@ -72,8 +72,7 @@ func reducer(state: inout AppState, action: Action) {
 
     case .skipToBreak:
         if state.currentSession == .pomodoro {
-            recordCurrentSession(state: &state, wasCompleted: true)
-            updateStatisticsForCompletion(state: &state)
+            recordCurrentSession(state: &state, wasCompleted: false)
             moveToNextSession(state: &state)
         }
 
