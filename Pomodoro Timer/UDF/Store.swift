@@ -66,9 +66,18 @@ final class Store: ObservableObject {
             timer.stop()
             notifier.cancelAllNotifications()
             
-        case .skipToBreak, .skipToPomodoro, .startShortBreak, .startLongBreak:
+        case .skipToBreak, .skipToPomodoro:
             timer.stop()
             notifier.cancelAllNotifications()
+            
+        case .startShortBreak, .startLongBreak:
+            timer.stop()
+            notifier.cancelAllNotifications()
+            // Start timer for the break session
+            if state.timerState == .running {
+                timer.start()
+                scheduleNotificationForCurrentSession()
+            }
 
         case .complete, .updateBackgroundTime:
             if previousState.timerState == .running && state.timerState == .completed {

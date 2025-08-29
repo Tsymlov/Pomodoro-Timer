@@ -2,7 +2,7 @@
 //  CycleLogicTests.swift
 //  Pomodoro TimerTests
 //
-//  Test cases for pomodoro cycle logic
+//  Created by Alexey Tsymlov on 02.08.2025.
 //
 
 import XCTest

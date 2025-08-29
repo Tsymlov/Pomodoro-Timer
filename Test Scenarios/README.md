@@ -13,8 +13,10 @@ Tests for notification system behavior including:
 
 ### 2. [Cycle Management Testing](TEST_CYCLES.md)
 Tests for cycle counting logic including:
-- Normal cycle progression (TC-CYC-001 to TC-CYC-006)
-- Manual long break selection
+- Normal cycle progression (TC-CYC-001 to TC-CYC-010)
+- Manual break selection from any state
+- Switching between break types
+- Break options availability
 - Daily reset behavior
 - Cycle calculation rules
 
@@ -87,6 +89,7 @@ Tests for statistics display including:
 5. ~~**Duplicate Notifications**: Multiple notifications were scheduled for same event~~ ✅ Fixed: Using single identifier
 6. ~~**Pause/Resume Timer**: Time was incorrectly calculated after pause~~ ✅ Fixed: Preserving time during pause
 7. ~~**Skip to Break Counting**: Pomodoros were counted even when skipping to break~~ ✅ Fixed: Only count completed pomodoros
+8. ~~**Break Selection Limited**: Could only select breaks in idle state~~ ✅ Fixed: Manual break selection available from any state except pause
 
 ## How to Report Issues
 

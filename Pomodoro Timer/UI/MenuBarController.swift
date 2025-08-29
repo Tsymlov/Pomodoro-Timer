@@ -256,7 +256,8 @@ final class MenuBarController: NSObject, ObservableObject {
     }
 
     private func addBreakOptions(to menu: NSMenu) {
-        guard store.timerState == .idle else { return }
+        // Show break options except when paused
+        guard store.timerState != .paused else { return }
 
         menu.addItem(.separator())
         menu.addItem(createMenuItem(

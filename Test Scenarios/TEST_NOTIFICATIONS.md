@@ -30,6 +30,7 @@
 - [ ] Start a Pomodoro session
 - [ ] Switch to Short Break (from menu)
 - [ ] Verify previous notification is cancelled
+- [ ] Verify new notification is scheduled for Short Break
 - [ ] Start a Pomodoro session
 - [ ] Skip to break
 - [ ] Verify previous notification is cancelled
@@ -46,6 +47,21 @@
 - [ ] Verify notification remains scheduled
 - [ ] Unhide the app
 - [ ] Verify timer state is correct
+
+### TC-NOTIF-008: Break Type Switching
+- [ ] Start a Short Break
+- [ ] During the break, select "Start Long Break" from menu
+- [ ] Verify previous Short Break notification is cancelled
+- [ ] Verify new Long Break notification is scheduled
+- [ ] Let Long Break complete
+- [ ] Verify correct notification appears
+
+### TC-NOTIF-009: Pomodoro to Break Direct Switch
+- [ ] Start a Pomodoro session
+- [ ] During the Pomodoro, select "Start Long Break" from menu
+- [ ] Verify Pomodoro notification is cancelled
+- [ ] Verify Long Break notification is scheduled
+- [ ] Verify Pomodoro is NOT counted as completed
 
 ## How to Check Scheduled Notifications (macOS)
 

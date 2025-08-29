@@ -51,6 +51,20 @@ The display shows completed pomodoros as: `n×` where n is the number of pomodor
 - **Expected Display**: `2× 3× 1×`
 - **Cycle Counter**: 3
 
+### TC-DISP-009: Direct Break Switch (No Pomodoro Count)
+- **State**: Start Pomodoro → Switch to Long Break before completion → Complete Long Break
+- **Total**: 0 pomodoros, 1 long break
+- **Expected Display**: Nothing (empty string)
+- **Cycle Counter**: 2
+- **Note**: Pomodoro wasn't completed, so not counted
+
+### TC-DISP-010: Break Type Switch Mid-Session
+- **State**: Start Short Break → Switch to Long Break → Complete Long Break → 1 Pomodoro
+- **Total**: 1 pomodoro, 1 long break
+- **Expected Display**: `1×`
+- **Cycle Counter**: 2
+- **Note**: Long Break completion increments cycle
+
 ## Visual Indicators
 
 The display should show:
@@ -72,3 +86,6 @@ The display should show:
 3. **Skip patterns** - Using Skip to Break/Pomodoro
 4. **Day boundary** - Display should reset for new day
 5. **App restart** - Should reconstruct from today's statistics
+6. **Direct break selection** - Switching to break from Pomodoro shouldn't count the Pomodoro
+7. **Break type switching** - Changing from Short to Long Break mid-session
+8. **Pause/Resume** - Display should remain consistent during pause

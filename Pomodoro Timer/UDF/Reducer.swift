@@ -177,7 +177,20 @@ private func moveToNextSession(state: inout AppState) {
 // MARK: - Helper Functions
 
 private func startBreakSession(state: inout AppState, sessionType: SessionType) {
-    guard state.timerState == .idle else { return }
+    // Allow starting break from any state except paused
+    guard state.timerState != .paused else { return }
+    
+    // If transitioning from running session, record it
+    if state.timerState == .running {
+        // Record current session as incomplete
+        recordCurrentSession(state: &state, wasCompleted: false)
+        
+        // If switching from one break to another break type
+        if (state.currentSession == .shortBreak || state.currentSession == .longBreak) && 
+           (sessionType == .shortBreak || sessionType == .longBreak) {
+            // Just switching break types, no additional logic needed
+        }
+    }
 
     state.currentSession = sessionType
     state.timeRemaining = state.getCurrentSessionDuration()
