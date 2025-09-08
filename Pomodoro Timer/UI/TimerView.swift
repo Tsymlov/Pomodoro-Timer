@@ -11,6 +11,7 @@ struct TimerView: View {
     @EnvironmentObject var store: Store
     @State private var goalText = ""
     @State private var showingGoalInput = false
+    @State private var showingSettings = false
 
     // MARK: - Body
     var body: some View {
@@ -34,6 +35,9 @@ struct TimerView: View {
                 currentGoal: store.currentGoal,
                 onSave: { store.send(.setGoal(goalText)) }
             )
+        }
+        .sheet(isPresented: $showingSettings) {
+            SettingsView(store: store)
         }
     }
 
@@ -135,7 +139,7 @@ struct TimerView: View {
     // MARK: - Settings Button
     private var settingsButton: some View {
         Button(action: {
-            // Handle settings action
+            showingSettings = true
         }) {
             Image(systemName: "gearshape.fill")
                 .foregroundColor(store.currentSession.color)
