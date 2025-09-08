@@ -21,13 +21,14 @@ struct SettingsView: View {
     
     init(store: Store) {
         self.store = store
-        _pomodoroDuration = State(initialValue: store.settings.pomodoroDuration / 60)
-        _shortBreakDuration = State(initialValue: store.settings.shortBreakDuration / 60)
-        _longBreakDuration = State(initialValue: store.settings.longBreakDuration / 60)
-        _dailyGoal = State(initialValue: Double(store.settings.dailyGoal))
-        _autoStartBreaks = State(initialValue: store.settings.autoStartBreaks)
-        _autoStartPomodoros = State(initialValue: store.settings.autoStartPomodoros)
-        _soundEnabled = State(initialValue: store.settings.soundEnabled)
+        let settings = store.settings
+        _pomodoroDuration = State(initialValue: settings.pomodoroDuration / 60)
+        _shortBreakDuration = State(initialValue: settings.shortBreakDuration / 60)
+        _longBreakDuration = State(initialValue: settings.longBreakDuration / 60)
+        _dailyGoal = State(initialValue: Double(settings.dailyGoal))
+        _autoStartBreaks = State(initialValue: settings.autoStartBreaks)
+        _autoStartPomodoros = State(initialValue: settings.autoStartPomodoros)
+        _soundEnabled = State(initialValue: settings.soundEnabled)
     }
     
     var body: some View {
@@ -35,7 +36,7 @@ struct SettingsView: View {
             headerView
             
             ScrollView {
-                VStack(spacing: 20) {
+                VStack(spacing: Constants.settingsSectionSpacing) {
                     timerDurationsSection
                     goalsSection
                     automationSection
@@ -46,151 +47,105 @@ struct SettingsView: View {
             
             buttonsView
         }
-        .frame(width: 450, height: 550)
+        .frame(width: Constants.settingsWindowWidth, height: Constants.settingsWindowHeight)
         .background(Color(NSColor.windowBackgroundColor))
     }
     
+    // MARK: - Header
     private var headerView: some View {
         HStack {
             Text("Settings")
                 .font(.largeTitle)
                 .fontWeight(.bold)
-            
             Spacer()
         }
         .padding()
         .background(Color(NSColor.controlBackgroundColor))
     }
     
+    // MARK: - Timer Durations Section
     private var timerDurationsSection: some View {
-        VStack(alignment: .leading, spacing: 15) {
-            Text("Timer Durations")
-                .font(.headline)
-                .foregroundColor(.secondary)
-            
-            VStack(spacing: 12) {
-                durationRow(
+        SettingsSection(title: "Timer Durations") {
+            VStack(spacing: Constants.settingsRowSpacing) {
+                DurationRow(
                     title: "Pomodoro",
                     value: $pomodoroDuration,
-                    range: 1...60,
+                    range: Constants.pomodoroMinDuration...Constants.pomodoroMaxDuration,
+                    icon: "timer",
                     color: .red
                 )
                 
-                durationRow(
+                DurationRow(
                     title: "Short Break",
                     value: $shortBreakDuration,
-                    range: 1...30,
+                    range: Constants.shortBreakMinDuration...Constants.shortBreakMaxDuration,
+                    icon: "cup.and.saucer",
                     color: .blue
                 )
                 
-                durationRow(
+                DurationRow(
                     title: "Long Break",
                     value: $longBreakDuration,
-                    range: 1...60,
+                    range: Constants.longBreakMinDuration...Constants.longBreakMaxDuration,
+                    icon: "moon",
                     color: .purple
                 )
             }
-            .padding()
-            .background(Color(NSColor.controlBackgroundColor))
-            .cornerRadius(10)
         }
     }
     
-    private func durationRow(title: String, value: Binding<Double>, range: ClosedRange<Double>, color: Color) -> some View {
-        HStack {
-            Label(title, systemImage: iconForSession(title))
-                .foregroundColor(color)
-                .frame(width: 120, alignment: .leading)
-            
-            Slider(value: value, in: range, step: 1)
-                .accentColor(color)
-            
-            Text("\(Int(value.wrappedValue)) min")
-                .font(.system(.body, design: .monospaced))
-                .frame(width: 60, alignment: .trailing)
-        }
-    }
-    
-    private func iconForSession(_ title: String) -> String {
-        switch title {
-        case "Pomodoro":
-            return "timer"
-        case "Short Break":
-            return "cup.and.saucer"
-        case "Long Break":
-            return "moon"
-        default:
-            return "clock"
-        }
-    }
-    
+    // MARK: - Goals Section
     private var goalsSection: some View {
-        VStack(alignment: .leading, spacing: 15) {
-            Text("Goals")
-                .font(.headline)
-                .foregroundColor(.secondary)
-            
-            VStack(spacing: 12) {
-                HStack {
-                    Label("Daily Goal", systemImage: "target")
-                        .foregroundColor(.orange)
-                        .frame(width: 120, alignment: .leading)
-                    
-                    Slider(value: $dailyGoal, in: 1...20, step: 1)
-                        .accentColor(.orange)
-                    
-                    Text("\(Int(dailyGoal)) pomodoros")
-                        .font(.system(.body, design: .monospaced))
-                        .frame(width: 100, alignment: .trailing)
-                }
-            }
-            .padding()
-            .background(Color(NSColor.controlBackgroundColor))
-            .cornerRadius(10)
-        }
-    }
-    
-    private var automationSection: some View {
-        VStack(alignment: .leading, spacing: 15) {
-            Text("Automation")
-                .font(.headline)
-                .foregroundColor(.secondary)
-            
-            VStack(spacing: 12) {
-                Toggle(isOn: $autoStartBreaks) {
-                    Label("Auto-start breaks", systemImage: "play.circle")
-                        .foregroundColor(.green)
-                }
+        SettingsSection(title: "Goals") {
+            HStack {
+                Label("Daily Goal", systemImage: "target")
+                    .foregroundColor(.orange)
+                    .frame(width: Constants.settingsLabelWidth, alignment: .leading)
                 
-                Toggle(isOn: $autoStartPomodoros) {
-                    Label("Auto-start pomodoros", systemImage: "repeat.circle")
-                        .foregroundColor(.green)
-                }
+                Slider(value: $dailyGoal, in: Constants.dailyGoalMin...Constants.dailyGoalMax, step: 1)
+                    .accentColor(.orange)
+                
+                Text("\(Int(dailyGoal)) pomodoros")
+                    .font(.system(.body, design: .monospaced))
+                    .frame(width: Constants.settingsPomodorosLabelWidth, alignment: .trailing)
             }
-            .padding()
-            .background(Color(NSColor.controlBackgroundColor))
-            .cornerRadius(10)
         }
     }
     
+    // MARK: - Automation Section
+    private var automationSection: some View {
+        SettingsSection(title: "Automation") {
+            VStack(spacing: Constants.settingsRowSpacing) {
+                ToggleRow(
+                    title: "Auto-start breaks",
+                    isOn: $autoStartBreaks,
+                    icon: "play.circle",
+                    color: .green
+                )
+                
+                ToggleRow(
+                    title: "Auto-start pomodoros",
+                    isOn: $autoStartPomodoros,
+                    icon: "repeat.circle",
+                    color: .green
+                )
+            }
+        }
+    }
+    
+    // MARK: - Notifications Section
     private var notificationsSection: some View {
-        VStack(alignment: .leading, spacing: 15) {
-            Text("Notifications")
-                .font(.headline)
-                .foregroundColor(.secondary)
-            
-            VStack(spacing: 12) {
-                Toggle(isOn: $soundEnabled) {
-                    Label("Sound notifications", systemImage: "speaker.wave.2")
-                        .foregroundColor(.indigo)
-                }
-            }
-            .padding()
-            .background(Color(NSColor.controlBackgroundColor))
-            .cornerRadius(10)
+        SettingsSection(title: "Notifications") {
+            ToggleRow(
+                title: "Sound notifications",
+                isOn: $soundEnabled,
+                icon: "speaker.wave.2",
+                color: .indigo
+            )
         }
     }
     
+    // MARK: - Buttons
     private var buttonsView: some View {
         HStack {
             Button("Cancel") {
@@ -206,7 +161,6 @@ struct SettingsView: View {
             
             Button("Save") {
                 saveSettings()
-                dismiss()
             }
             .keyboardShortcut(.return)
             .buttonStyle(.borderedProminent)
@@ -215,11 +169,12 @@ struct SettingsView: View {
         .background(Color(NSColor.controlBackgroundColor))
     }
     
+    // MARK: - Actions
     private func resetToDefaults() {
         pomodoroDuration = Constants.pomodoroDuration / 60
         shortBreakDuration = Constants.shortBreakDuration / 60
         longBreakDuration = Constants.longBreakDuration / 60
-        dailyGoal = 8
+        dailyGoal = Double(Constants.defaultDailyGoal)
         autoStartBreaks = false
         autoStartPomodoros = false
         soundEnabled = true
@@ -236,6 +191,70 @@ struct SettingsView: View {
         newSettings.soundEnabled = soundEnabled
         
         store.send(.updateSettings(newSettings))
+        dismiss()
+    }
+}
+
+// MARK: - Subviews
+struct SettingsSection<Content: View>: View {
+    let title: String
+    let content: Content
+    
+    init(title: String, @ViewBuilder content: () -> Content) {
+        self.title = title
+        self.content = content()
+    }
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: Constants.settingsPadding) {
+            Text(title)
+                .font(.headline)
+                .foregroundColor(.secondary)
+            
+            VStack(spacing: Constants.settingsRowSpacing) {
+                content
+            }
+            .padding()
+            .background(Color(NSColor.controlBackgroundColor))
+            .cornerRadius(Constants.cornerRadius)
+        }
+    }
+}
+
+struct DurationRow: View {
+    let title: String
+    @Binding var value: Double
+    let range: ClosedRange<Double>
+    let icon: String
+    let color: Color
+    
+    var body: some View {
+        HStack {
+            Label(title, systemImage: icon)
+                .foregroundColor(color)
+                .frame(width: Constants.settingsLabelWidth, alignment: .leading)
+            
+            Slider(value: $value, in: range, step: 1)
+                .accentColor(color)
+            
+            Text("\(Int(value)) min")
+                .font(.system(.body, design: .monospaced))
+                .frame(width: Constants.settingsMinutesLabelWidth, alignment: .trailing)
+        }
+    }
+}
+
+struct ToggleRow: View {
+    let title: String
+    @Binding var isOn: Bool
+    let icon: String
+    let color: Color
+    
+    var body: some View {
+        Toggle(isOn: $isOn) {
+            Label(title, systemImage: icon)
+                .foregroundColor(color)
+        }
     }
 }
 

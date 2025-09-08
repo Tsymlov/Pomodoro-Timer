@@ -53,4 +53,25 @@ enum Constants {
     static let timerCircleSize: CGFloat = 200
     static let timerLineWidth: CGFloat = 10
     #endif
+    
+    // MARK: - Settings Window
+    static let settingsWindowWidth: CGFloat = 450
+    static let settingsWindowHeight: CGFloat = 550
+    static let settingsSectionSpacing: CGFloat = 20
+    static let settingsRowSpacing: CGFloat = 12
+    static let settingsPadding: CGFloat = 15
+    static let settingsLabelWidth: CGFloat = 120
+    static let settingsMinutesLabelWidth: CGFloat = 60
+    static let settingsPomodorosLabelWidth: CGFloat = 100
+    
+    // MARK: - Settings Ranges
+    static let pomodoroMinDuration: Double = 1
+    static let pomodoroMaxDuration: Double = 60
+    static let shortBreakMinDuration: Double = 1
+    static let shortBreakMaxDuration: Double = 30
+    static let longBreakMinDuration: Double = 1
+    static let longBreakMaxDuration: Double = 60
+    static let dailyGoalMin: Double = 1
+    static let dailyGoalMax: Double = 20
+    static let defaultDailyGoal: Int = 8
 }
