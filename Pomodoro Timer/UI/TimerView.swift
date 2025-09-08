@@ -141,7 +141,7 @@ struct TimerView: View {
         Button(action: {
             showingSettings = true
         }) {
-            Image(systemName: "gearshape.fill")
+            Image(systemName: Strings.Icons.gearshape)
                 .foregroundColor(store.currentSession.color)
         }
     }

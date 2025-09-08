@@ -54,7 +54,7 @@ struct SettingsView: View {
     // MARK: - Header
     private var headerView: some View {
         HStack {
-            Text("Settings")
+            Text(Strings.Settings.title)
                 .font(.largeTitle)
                 .fontWeight(.bold)
             Spacer()
@@ -65,10 +65,10 @@ struct SettingsView: View {
     
     // MARK: - Timer Durations Section
     private var timerDurationsSection: some View {
-        SettingsSection(title: "Timer Durations") {
+        SettingsSection(title: Strings.Settings.timerDurations) {
             VStack(spacing: Constants.settingsRowSpacing) {
                 DurationRow(
-                    title: "Pomodoro",
+                    title: Strings.Settings.pomodoro,
                     value: $pomodoroDuration,
                     range: Constants.pomodoroMinDuration...Constants.pomodoroMaxDuration,
                     icon: "timer",
@@ -76,7 +76,7 @@ struct SettingsView: View {
                 )
                 
                 DurationRow(
-                    title: "Short Break",
+                    title: Strings.Settings.shortBreak,
                     value: $shortBreakDuration,
                     range: Constants.shortBreakMinDuration...Constants.shortBreakMaxDuration,
                     icon: "cup.and.saucer",
@@ -84,7 +84,7 @@ struct SettingsView: View {
                 )
                 
                 DurationRow(
-                    title: "Long Break",
+                    title: Strings.Settings.longBreak,
                     value: $longBreakDuration,
                     range: Constants.longBreakMinDuration...Constants.longBreakMaxDuration,
                     icon: "moon",
@@ -96,16 +96,16 @@ struct SettingsView: View {
     
     // MARK: - Goals Section
     private var goalsSection: some View {
-        SettingsSection(title: "Goals") {
+        SettingsSection(title: Strings.Settings.goals) {
             HStack {
-                Label("Daily Goal", systemImage: "target")
+                Label(Strings.Settings.dailyGoal, systemImage: "target")
                     .foregroundColor(.orange)
                     .frame(width: Constants.settingsLabelWidth, alignment: .leading)
                 
                 Slider(value: $dailyGoal, in: Constants.dailyGoalMin...Constants.dailyGoalMax, step: 1)
                     .accentColor(.orange)
                 
-                Text("\(Int(dailyGoal)) pomodoros")
+                Text(String(format: Strings.Settings.pomodorosFormat, Int(dailyGoal)))
                     .font(.system(.body, design: .monospaced))
                     .frame(width: Constants.settingsPomodorosLabelWidth, alignment: .trailing)
             }
@@ -114,17 +114,17 @@ struct SettingsView: View {
     
     // MARK: - Automation Section
     private var automationSection: some View {
-        SettingsSection(title: "Automation") {
+        SettingsSection(title: Strings.Settings.automation) {
             VStack(spacing: Constants.settingsRowSpacing) {
                 ToggleRow(
-                    title: "Auto-start breaks",
+                    title: Strings.Settings.autoStartBreaks,
                     isOn: $autoStartBreaks,
                     icon: "play.circle",
                     color: .green
                 )
                 
                 ToggleRow(
-                    title: "Auto-start pomodoros",
+                    title: Strings.Settings.autoStartPomodoros,
                     isOn: $autoStartPomodoros,
                     icon: "repeat.circle",
                     color: .green
@@ -135,11 +135,11 @@ struct SettingsView: View {
     
     // MARK: - Notifications Section
     private var notificationsSection: some View {
-        SettingsSection(title: "Notifications") {
+        SettingsSection(title: Strings.Settings.notifications) {
             ToggleRow(
-                title: "Sound notifications",
+                title: Strings.Settings.soundNotifications,
                 isOn: $soundEnabled,
-                icon: "speaker.wave.2",
+                icon: Strings.Icons.speakerWave,
                 color: .indigo
             )
         }
@@ -148,18 +148,18 @@ struct SettingsView: View {
     // MARK: - Buttons
     private var buttonsView: some View {
         HStack {
-            Button("Cancel") {
+            Button(Strings.Settings.cancel) {
                 dismiss()
             }
             .keyboardShortcut(.escape)
             
             Spacer()
             
-            Button("Reset to Defaults") {
+            Button(Strings.Settings.resetToDefaults) {
                 resetToDefaults()
             }
             
-            Button("Save") {
+            Button(Strings.Settings.save) {
                 saveSettings()
             }
             .keyboardShortcut(.return)
@@ -237,7 +237,7 @@ struct DurationRow: View {
             Slider(value: $value, in: range, step: 1)
                 .accentColor(color)
             
-            Text("\(Int(value)) min")
+            Text(String(format: Strings.Settings.minutesFormat, Int(value)))
                 .font(.system(.body, design: .monospaced))
                 .frame(width: Constants.settingsMinutesLabelWidth, alignment: .trailing)
         }

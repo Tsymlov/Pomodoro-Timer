@@ -133,7 +133,7 @@ final class MenuTimerView: NSView {
     }
 
     private func configureTimeLabelForIdleState() {
-        timeLabel.stringValue = "Ready"
+        timeLabel.stringValue = Strings.Timer.ready
         timeLabel.font = Fonts.menuReadyFont()
         timeLabel.textColor = NSColor(Colors.secondaryText)
     }

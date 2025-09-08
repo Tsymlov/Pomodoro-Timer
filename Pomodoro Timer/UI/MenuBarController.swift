@@ -230,7 +230,7 @@ final class MenuBarController: NSObject, ObservableObject {
 
     private func addMainTimerControls(to menu: NSMenu) {
         if store.canStart {
-            let title = store.timerState == .paused ? "Resume Timer" : "Start Timer"
+            let title = store.timerState == .paused ? Strings.MenuBar.resumeTimer : Strings.MenuBar.startTimer
             menu.addItem(createMenuItem(
                 title: title,
                 action: #selector(startTimer),
@@ -240,7 +240,7 @@ final class MenuBarController: NSObject, ObservableObject {
 
         if store.canPause {
             menu.addItem(createMenuItem(
-                title: "Pause Timer",
+                title: Strings.MenuBar.pauseTimer,
                 action: #selector(pauseTimer),
                 keyEquivalent: "p"
             ))
@@ -248,7 +248,7 @@ final class MenuBarController: NSObject, ObservableObject {
 
         if store.canReset {
             menu.addItem(createMenuItem(
-                title: "Reset Timer",
+                title: Strings.MenuBar.resetTimer,
                 action: #selector(resetTimer),
                 keyEquivalent: "r"
             ))
@@ -260,25 +260,25 @@ final class MenuBarController: NSObject, ObservableObject {
 
         menu.addItem(.separator())
         menu.addItem(createMenuItem(
-            title: "Start Short Break",
+            title: Strings.MenuBar.startShortBreak,
             action: #selector(startShortBreak)
         ))
         menu.addItem(createMenuItem(
-            title: "Start Long Break",
+            title: Strings.MenuBar.startLongBreak,
             action: #selector(startLongBreak)
         ))
     }
 
     private func addWindowControl(to menu: NSMenu) {
         menu.addItem(createMenuItem(
-            title: "Show Pomodoro Timer",
+            title: Strings.MenuBar.showPomodoroTimer,
             action: #selector(showMainWindow)
         ))
     }
 
     private func addQuitItem(to menu: NSMenu) {
         menu.addItem(createMenuItem(
-            title: "Quit Pomodoro Timer",
+            title: Strings.MenuBar.quitPomodoroTimer,
             action: #selector(quitApp),
             keyEquivalent: "q"
         ))
@@ -409,11 +409,11 @@ extension SessionType {
     var displayName: String {
         switch self {
         case .pomodoro:
-            return "Focus"
+            return Strings.Sessions.focus
         case .shortBreak:
-            return "Short Break"
+            return Strings.Sessions.shortBreak
         case .longBreak:
-            return "Long Break"
+            return Strings.Sessions.longBreak
         }
     }
 }
