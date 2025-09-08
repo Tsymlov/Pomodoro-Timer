@@ -36,7 +36,7 @@ enum Strings {
     // MARK: - Menu Bar
     enum MenuBar {
         static let resumeTimer = "Resume Timer"
-        static let startTimer = "Start Timer"
+        static let startTimer = "Start Focus"
         static let pauseTimer = "Pause Timer"
         static let resetTimer = "Reset Timer"
         static let startShortBreak = "Start Short Break"
@@ -65,11 +65,16 @@ enum Strings {
     enum Icons {
         static let timer = "timer"
         static let cupAndSaucer = "cup.and.saucer"
+        static let cupAndSaucerFill = "cup.and.saucer.fill"
         static let moon = "moon"
         static let target = "target"
         static let playCircle = "play.circle"
+        static let playFill = "play.fill"
         static let repeatCircle = "repeat.circle"
         static let speakerWave = "speaker.wave.2"
         static let gearshape = "gearshape.fill"
+        static let stopFill = "stop.fill"
+        static let forwardFill = "forward.fill"
+        static let arrowCounterclockwise = "arrow.counterclockwise"
     }
 }

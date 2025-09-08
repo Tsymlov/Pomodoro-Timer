@@ -78,6 +78,7 @@ struct TimerView: View {
         ControlButtonsView(
             canReset: store.canReset,
             timerState: store.timerState,
+            currentSession: store.currentSession,
             sessionColor: store.currentSession.color,
             mainButtonIcon: mainButtonIcon,
             onReset: { store.send(.reset) },
@@ -248,6 +249,7 @@ struct TimerCircleView: View {
 struct ControlButtonsView: View {
     let canReset: Bool
     let timerState: TimerState
+    let currentSession: SessionType
     let sessionColor: Color
     let mainButtonIcon: String
     let onReset: () -> Void
@@ -266,15 +268,31 @@ struct ControlButtonsView: View {
 
     var body: some View {
         HStack(spacing: buttonSpacing) {
-            resetButton
-            mainActionButton
-            skipButton
+            if shouldShowPomodoroButtons {
+                stopButton
+                startBreakButton
+            } else if shouldShowPauseButtons {
+                stopButton
+                startFocusButton
+            } else {
+                resetButton
+                mainActionButton
+                skipButton
+            }
         }
+    }
+    
+    private var shouldShowPomodoroButtons: Bool {
+        currentSession == .pomodoro && timerState == .running
+    }
+    
+    private var shouldShowPauseButtons: Bool {
+        currentSession == .pomodoro && timerState == .paused
     }
 
     private var resetButton: some View {
         Button(action: onReset) {
-            Image(systemName: "arrow.counterclockwise")
+            Image(systemName: Strings.Icons.arrowCounterclockwise)
                 .font(Fonts.secondaryButton)
                 .foregroundColor(Colors.resetButton)
                 .frame(width: buttonSize, height: buttonSize)
@@ -299,11 +317,44 @@ struct ControlButtonsView: View {
 
     private var skipButton: some View {
         Button(action: onSkip) {
-            Image(systemName: "forward.fill")
+            Image(systemName: Strings.Icons.forwardFill)
                 .font(Fonts.secondaryButton)
                 .foregroundColor(Colors.skipButton)
                 .frame(width: buttonSize, height: buttonSize)
                 .background(Colors.skipButtonBackground)
+                .clipShape(Circle())
+        }
+    }
+    
+    private var stopButton: some View {
+        Button(action: onReset) {
+            Image(systemName: Strings.Icons.stopFill)
+                .font(Fonts.mainButton)
+                .foregroundColor(Colors.mainButtonText)
+                .frame(width: mainButtonSize, height: mainButtonSize)
+                .background(Color.red)
+                .clipShape(Circle())
+        }
+    }
+    
+    private var startBreakButton: some View {
+        Button(action: onSkip) {
+            Image(systemName: Strings.Icons.cupAndSaucerFill)
+                .font(Fonts.mainButton)
+                .foregroundColor(Colors.mainButtonText)
+                .frame(width: mainButtonSize, height: mainButtonSize)
+                .background(Color.blue)
+                .clipShape(Circle())
+        }
+    }
+    
+    private var startFocusButton: some View {
+        Button(action: onMainAction) {
+            Image(systemName: Strings.Icons.playFill)
+                .font(Fonts.mainButton)
+                .foregroundColor(Colors.mainButtonText)
+                .frame(width: mainButtonSize, height: mainButtonSize)
+                .background(Color.red)
                 .clipShape(Circle())
         }
     }
