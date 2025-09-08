@@ -69,8 +69,8 @@ final class CycleLogicTests: XCTestCase {
         state.currentSessionStartTime = Date()
         state.sessionEndTime = Date()
         
-        // When - Complete pomodoro naturally
-        reducer(state: &state, action: .complete)
+        // When - Complete pomodoro naturally via timer update
+        reducer(state: &state, action: .updateBackgroundTime)
         
         // Then
         XCTAssertEqual(state.statistics.completedPomodoros, 1, "Pomodoro count should increase after natural completion")

@@ -61,11 +61,9 @@ func reducer(state: inout AppState, action: Action) {
         updateTimerProgress(state: &state)
 
     case .complete:
-        if state.timerState == .running {
-            recordCurrentSession(state: &state, wasCompleted: true)
-            updateStatisticsForCompletion(state: &state)
-            state.timerState = .completed
-        }
+        // Completion is handled in updateTimerProgress
+        // This action is kept for compatibility but doesn't do anything
+        break
 
     case .moveToNextSession:
         moveToNextSession(state: &state)
@@ -200,19 +198,17 @@ private func startBreakSession(state: inout AppState, sessionType: SessionType) 
 }
 
 private func updateTimerProgress(state: inout AppState) {
-    guard state.timerState == .running || state.timerState == .completed else { return }
+    guard state.timerState == .running else { return }
     guard let endTime = state.sessionEndTime else { return }
 
     let now = Date()
 
-    if state.timerState == .running {
-        if now >= endTime {
-            recordCurrentSession(state: &state, wasCompleted: true)
-            updateStatisticsForCompletion(state: &state)
-            state.timerState = .completed
-            state.timeRemaining = 0
-        } else {
-            state.timeRemaining = endTime.timeIntervalSince(now)
-        }
+    if now >= endTime {
+        recordCurrentSession(state: &state, wasCompleted: true)
+        updateStatisticsForCompletion(state: &state)
+        state.timerState = .completed
+        state.timeRemaining = 0
+    } else {
+        state.timeRemaining = endTime.timeIntervalSince(now)
     }
 }
