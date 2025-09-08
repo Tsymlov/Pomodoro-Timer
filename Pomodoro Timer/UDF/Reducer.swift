@@ -61,8 +61,6 @@ func reducer(state: inout AppState, action: Action) {
         updateTimerProgress(state: &state)
 
     case .complete:
-        // Completion is handled in updateTimerProgress
-        // This action is kept for compatibility but doesn't do anything
         break
 
     case .moveToNextSession:
@@ -113,7 +111,7 @@ func reducer(state: inout AppState, action: Action) {
         if !goalText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             let newGoal = SessionGoal(sessionType: state.currentSession, text: goalText)
             state.currentGoal = newGoal
-            state.allGoals.append(newGoal) // ADD: save to history
+            state.allGoals.append(newGoal)
         }
         state.isGoalInputPresented = false
     }
@@ -175,19 +173,10 @@ private func moveToNextSession(state: inout AppState) {
 // MARK: - Helper Functions
 
 private func startBreakSession(state: inout AppState, sessionType: SessionType) {
-    // Allow starting break from any state except paused
     guard state.timerState != .paused else { return }
     
-    // If transitioning from running session, record it
     if state.timerState == .running {
-        // Record current session as incomplete
         recordCurrentSession(state: &state, wasCompleted: false)
-        
-        // If switching from one break to another break type
-        if (state.currentSession == .shortBreak || state.currentSession == .longBreak) && 
-           (sessionType == .shortBreak || sessionType == .longBreak) {
-            // Just switching break types, no additional logic needed
-        }
     }
 
     state.currentSession = sessionType

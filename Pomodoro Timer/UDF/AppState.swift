@@ -34,7 +34,6 @@ struct AppState: Equatable, Codable {
     }
 
     var formattedTime: String {
-        // Show overtime after session completion
         if timerState == .completed, let startTime = currentSessionStartTime {
             let elapsedTime = Date().timeIntervalSince(startTime)
             let minutes = Int(elapsedTime) / 60
@@ -42,7 +41,6 @@ struct AppState: Equatable, Codable {
             return String(format: "%02d:%02d", minutes, seconds)
         }
 
-        // Normal countdown display
         let minutes = Int(abs(timeRemaining)) / 60
         let seconds = Int(abs(timeRemaining)) % 60
         return String(format: "%02d:%02d", minutes, seconds)

@@ -32,10 +32,7 @@ final class Store: ObservableObject {
         let previousState = state
         reducer(state: &state, action: action)
         handleSideEffects(previousState: previousState, action: action)
-
-        // Save state with optimization for frequent updates
-        let shouldSaveImmediately = action.shouldSaveImmediately
-        persistence.saveAppState(state, immediately: shouldSaveImmediately)
+        persistence.saveAppState(state, immediately: action.shouldSaveImmediately)
     }
     
     // MARK: - Public Methods
@@ -73,7 +70,6 @@ final class Store: ObservableObject {
         case .startShortBreak, .startLongBreak:
             timer.stop()
             notifier.cancelAllNotifications()
-            // Start timer for the break session
             if state.timerState == .running {
                 timer.start()
                 scheduleNotificationForCurrentSession()
@@ -101,7 +97,6 @@ final class Store: ObservableObject {
 
     // MARK: - Session Management
     private func handleSessionCompletion() {
-        // Timer continues for overtime display
     }
 
     // MARK: - State Management
