@@ -21,6 +21,7 @@ struct AppState: Equatable, Codable {
     var sessionEndTime: Date?
     var backgroundTime: Date?
     var pausedTimeRemaining: TimeInterval?
+    var editingSettings: Settings?
 
     // MARK: - Computed Properties
     var progress: Double {

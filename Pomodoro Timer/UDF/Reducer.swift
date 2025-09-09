@@ -93,6 +93,45 @@ func reducer(state: inout AppState, action: Action) {
         if state.timerState == .idle {
             state.timeRemaining = state.getCurrentSessionDuration()
         }
+        
+    case .beginEditingSettings:
+        state.editingSettings = state.settings
+        
+    case .updateEditingPomodoroDuration(let duration):
+        state.editingSettings?.pomodoroDuration = duration * Constants.secondsPerMinute
+        
+    case .updateEditingShortBreakDuration(let duration):
+        state.editingSettings?.shortBreakDuration = duration * Constants.secondsPerMinute
+        
+    case .updateEditingLongBreakDuration(let duration):
+        state.editingSettings?.longBreakDuration = duration * Constants.secondsPerMinute
+        
+    case .updateEditingDailyGoal(let goal):
+        state.editingSettings?.dailyGoal = Int(goal)
+        
+    case .updateEditingAutoStartBreaks(let enabled):
+        state.editingSettings?.autoStartBreaks = enabled
+        
+    case .updateEditingAutoStartPomodoros(let enabled):
+        state.editingSettings?.autoStartPomodoros = enabled
+        
+    case .updateEditingSoundEnabled(let enabled):
+        state.editingSettings?.soundEnabled = enabled
+        
+    case .saveEditingSettings:
+        if let editingSettings = state.editingSettings {
+            state.settings = editingSettings
+            if state.timerState == .idle {
+                state.timeRemaining = state.getCurrentSessionDuration()
+            }
+        }
+        state.editingSettings = nil
+        
+    case .cancelEditingSettings:
+        state.editingSettings = nil
+        
+    case .resetEditingSettingsToDefaults:
+        state.editingSettings = Settings()
 
     case .setDailyGoal(let goal):
         state.statistics.dailyGoal = max(1, goal)

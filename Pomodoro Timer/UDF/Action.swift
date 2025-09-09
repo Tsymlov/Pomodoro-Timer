@@ -21,6 +21,17 @@ enum Action: Equatable {
     case startShortBreak
     case startLongBreak
     case updateSettings(Settings)
+    case beginEditingSettings
+    case updateEditingPomodoroDuration(Double)
+    case updateEditingShortBreakDuration(Double)
+    case updateEditingLongBreakDuration(Double)
+    case updateEditingDailyGoal(Double)
+    case updateEditingAutoStartBreaks(Bool)
+    case updateEditingAutoStartPomodoros(Bool)
+    case updateEditingSoundEnabled(Bool)
+    case saveEditingSettings
+    case cancelEditingSettings
+    case resetEditingSettingsToDefaults
     case setDailyGoal(Int)
     case resetDailyStatistics
     case showGoalInput

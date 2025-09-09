@@ -87,7 +87,7 @@ final class Store: ObservableObject {
                 scheduleNotificationForCurrentSession()
             }
 
-        case .updateSettings:
+        case .updateSettings, .saveEditingSettings:
             persistence.saveSettings(state.settings)
 
         default:
@@ -152,6 +152,7 @@ final class Store: ObservableObject {
     var sessionHistory: [SessionRecord] { state.statistics.sessionHistory }
     var currentGoal: SessionGoal? { state.currentGoal }
     var isGoalInputPresented: Bool { state.isGoalInputPresented }
+    var editingSettings: Settings? { state.editingSettings }
 
     func sessionsByGoalText() -> [String: [SessionRecord]] {
         state.statistics.sessionsByGoalText(goals: state.allGoals)

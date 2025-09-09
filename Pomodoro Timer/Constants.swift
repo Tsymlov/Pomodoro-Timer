@@ -74,4 +74,12 @@ enum Constants {
     static let dailyGoalMin: Double = 1
     static let dailyGoalMax: Double = 20
     static let defaultDailyGoal: Int = 8
+    
+    // MARK: - Settings Defaults
+    static let defaultAutoStartBreaks: Bool = false
+    static let defaultAutoStartPomodoros: Bool = false
+    static let defaultSoundEnabled: Bool = true
+    
+    // MARK: - Time Conversion
+    static let secondsPerMinute: Double = 60
 }
