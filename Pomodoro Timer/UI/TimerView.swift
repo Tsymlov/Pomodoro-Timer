@@ -15,7 +15,7 @@ struct TimerView: View {
 
     // MARK: - Body
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: Constants.timerViewSpacing) {
             headerSection
             Spacer()
             timerCircle
@@ -24,8 +24,8 @@ struct TimerView: View {
             controlButtons
             Spacer()
         }
-        .padding(.horizontal, 15)
-        .padding(.vertical, 10)
+        .padding(.horizontal, Constants.timerViewPaddingHorizontal)
+        .padding(.vertical, Constants.timerViewPaddingVertical)
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Colors.appBackground)
         .sheet(isPresented: $showingGoalInput) {
@@ -76,11 +76,9 @@ struct TimerView: View {
     // MARK: - Control Buttons
     private var controlButtons: some View {
         ControlButtonsView(
-            canReset: store.canReset,
             timerState: store.timerState,
             currentSession: store.currentSession,
             sessionColor: store.currentSession.color,
-            mainButtonIcon: mainButtonIcon,
             onReset: { store.send(.reset) },
             onMainAction: mainButtonAction,
             onSkip: skipButtonAction
@@ -117,11 +115,11 @@ struct TimerView: View {
         Button(action: {
             showingGoalInput = true
         }) {
-            VStack(spacing: 4) {
-                Image(systemName: "target")
+            VStack(spacing: Constants.goalPlaceholderSpacing) {
+                Image(systemName: Strings.Icons.target)
                     .font(Fonts.title2)
                     .foregroundColor(Colors.secondaryText)
-                Text("Set a goal for this session")
+                Text(Strings.Timer.setGoal)
                     .font(Fonts.body)
                     .foregroundColor(Colors.secondaryText)
             }
@@ -144,19 +142,6 @@ struct TimerView: View {
         }) {
             Image(systemName: Strings.Icons.gearshape)
                 .foregroundColor(store.currentSession.color)
-        }
-    }
-
-    // MARK: - Computed Properties
-
-    private var mainButtonIcon: String {
-        switch store.timerState {
-        case .idle, .completed:
-            return "play.fill"
-        case .running:
-            return "pause.fill"
-        case .paused:
-            return "play.fill"
         }
     }
 
@@ -221,7 +206,7 @@ struct TimerCircleView: View {
     }
 
     private var timeDisplay: some View {
-        VStack(spacing: 6) {
+        VStack(spacing: Constants.timerCyclesSpacing) {
             Text(formattedTime)
                 #if os(iOS)
                 .font(Fonts.timerDisplay)
@@ -236,8 +221,8 @@ struct TimerCircleView: View {
                     .foregroundColor(sessionColor)
                     .lineLimit(2)
                     .multilineTextAlignment(.center)
-                    .frame(maxWidth: 200)
-                    .padding(.top, 10)
+                    .frame(maxWidth: Constants.timerCyclesMaxWidth)
+                    .padding(.top, Constants.timerCyclesPaddingTop)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -247,85 +232,64 @@ struct TimerCircleView: View {
 
 // MARK: - Control Buttons Component
 struct ControlButtonsView: View {
-    let canReset: Bool
     let timerState: TimerState
     let currentSession: SessionType
     let sessionColor: Color
-    let mainButtonIcon: String
     let onReset: () -> Void
     let onMainAction: () -> Void
     let onSkip: () -> Void
 
-    #if os(iOS)
-    private let buttonSize: CGFloat = 50
-    private let mainButtonSize: CGFloat = 80
-    private let buttonSpacing: CGFloat = 20
-    #else
-    private let buttonSize: CGFloat = 40
-    private let mainButtonSize: CGFloat = 64
-    private let buttonSpacing: CGFloat = 16
-    #endif
+    private let buttonSize: CGFloat = Constants.controlButtonSize
+    private let mainButtonSize: CGFloat = Constants.mainControlButtonSize
+    private let buttonSpacing: CGFloat = Constants.controlButtonSpacing
 
     var body: some View {
         HStack(spacing: buttonSpacing) {
-            if shouldShowPomodoroButtons {
-                stopButton
-                startBreakButton
-            } else if shouldShowPauseButtons {
-                stopButton
-                startFocusButton
-            } else {
-                resetButton
-                mainActionButton
-                skipButton
+            buttonGroup
+        }
+    }
+    
+    @ViewBuilder
+    private var buttonGroup: some View {
+        switch buttonLayout {
+        case .idlePomodoro:
+            startFocusButtonLarge
+            startBreakButtonLarge
+        case .activePomodoro:
+            stopButtonLarge
+            startBreakButtonLarge
+        case .pausedPomodoro:
+            stopButton
+            startFocusButton
+        case .breakSession:
+            startFocusButtonForBreak
+            stopButtonLarge
+        }
+    }
+    
+    private enum ButtonLayout {
+        case idlePomodoro
+        case activePomodoro  // for both running and completed
+        case pausedPomodoro
+        case breakSession
+    }
+    
+    private var buttonLayout: ButtonLayout {
+        if currentSession == .pomodoro {
+            switch timerState {
+            case .idle:
+                return .idlePomodoro
+            case .running, .completed:
+                return .activePomodoro
+            case .paused:
+                return .pausedPomodoro
             }
-        }
-    }
-    
-    private var shouldShowPomodoroButtons: Bool {
-        currentSession == .pomodoro && timerState == .running
-    }
-    
-    private var shouldShowPauseButtons: Bool {
-        currentSession == .pomodoro && timerState == .paused
-    }
-
-    private var resetButton: some View {
-        Button(action: onReset) {
-            Image(systemName: Strings.Icons.arrowCounterclockwise)
-                .font(Fonts.secondaryButton)
-                .foregroundColor(Colors.resetButton)
-                .frame(width: buttonSize, height: buttonSize)
-                .background(Colors.resetButtonBackground)
-                .clipShape(Circle())
-        }
-        .disabled(!canReset)
-    }
-
-    private var mainActionButton: some View {
-        Button(action: onMainAction) {
-            Image(systemName: mainButtonIcon)
-                .font(Fonts.mainButton)
-                .foregroundColor(Colors.mainButtonText)
-                .frame(width: mainButtonSize, height: mainButtonSize)
-                .background(sessionColor)
-                .clipShape(Circle())
-                .scaleEffect(timerState == .running ? 1.1 : 1.0)
-                .animation(.easeInOut(duration: 0.2), value: timerState)
+        } else {
+            // For break sessions (shortBreak, longBreak)
+            return .breakSession
         }
     }
 
-    private var skipButton: some View {
-        Button(action: onSkip) {
-            Image(systemName: Strings.Icons.forwardFill)
-                .font(Fonts.secondaryButton)
-                .foregroundColor(Colors.skipButton)
-                .frame(width: buttonSize, height: buttonSize)
-                .background(Colors.skipButtonBackground)
-                .clipShape(Circle())
-        }
-    }
-    
     private var stopButton: some View {
         Button(action: onReset) {
             Image(systemName: Strings.Icons.stopFill)
@@ -358,6 +322,54 @@ struct ControlButtonsView: View {
                 .clipShape(Circle())
         }
     }
+    
+    private var startFocusButtonLarge: some View {
+        Button(action: onMainAction) {
+            Text(Strings.Timer.startFocus)
+                .font(.headline)
+                .foregroundColor(Colors.mainButtonText)
+                .padding(.horizontal, Constants.controlButtonPaddingHorizontal)
+                .padding(.vertical, Constants.controlButtonPaddingVertical)
+                .background(Color.red)
+                .clipShape(RoundedRectangle(cornerRadius: Constants.controlButtonCornerRadius))
+        }
+    }
+    
+    private var startBreakButtonLarge: some View {
+        Button(action: onSkip) {
+            Text(Strings.Timer.startBreak)
+                .font(.headline)
+                .foregroundColor(Colors.mainButtonText)
+                .padding(.horizontal, Constants.controlButtonPaddingHorizontal)
+                .padding(.vertical, Constants.controlButtonPaddingVertical)
+                .background(Color.blue)
+                .clipShape(RoundedRectangle(cornerRadius: Constants.controlButtonCornerRadius))
+        }
+    }
+    
+    private var stopButtonLarge: some View {
+        Button(action: onReset) {
+            Text(Strings.Timer.stop)
+                .font(.headline)
+                .foregroundColor(Colors.mainButtonText)
+                .padding(.horizontal, Constants.controlButtonPaddingHorizontal)
+                .padding(.vertical, Constants.controlButtonPaddingVertical)
+                .background(Color.red)
+                .clipShape(RoundedRectangle(cornerRadius: Constants.controlButtonCornerRadius))
+        }
+    }
+    
+    private var startFocusButtonForBreak: some View {
+        Button(action: onSkip) {
+            Text(Strings.Timer.startFocus)
+                .font(.headline)
+                .foregroundColor(Colors.mainButtonText)
+                .padding(.horizontal, Constants.controlButtonPaddingHorizontal)
+                .padding(.vertical, Constants.controlButtonPaddingVertical)
+                .background(Color.red)
+                .clipShape(RoundedRectangle(cornerRadius: Constants.controlButtonCornerRadius))
+        }
+    }
 }
 
 // MARK: - Goal Input Sheet Component
@@ -368,37 +380,37 @@ struct GoalInputSheet: View {
     let onSave: () -> Void
 
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: Constants.goalInputSheetSpacing) {
             headerView
             questionText
             inputField
             Spacer()
         }
         .padding()
-        .frame(minWidth: 400, minHeight: 200)
+        .frame(minWidth: Constants.goalInputSheetMinWidth, minHeight: Constants.goalInputSheetMinHeight)
         .onAppear {
             goalText = currentGoal?.text ?? ""
         }
 #if os(iOS)
-        .presentationDetents([.height(200)])
+        .presentationDetents([.height(Constants.goalInputSheetDetentHeight)])
 #endif
     }
 
     private var headerView: some View {
         HStack {
-            Button("Cancel") {
+            Button(Strings.Timer.cancel) {
                 isPresented = false
                 goalText = ""
             }
 
             Spacer()
 
-            Text("Session Goal")
+            Text(Strings.Timer.sessionGoal)
                 .font(Fonts.headline)
 
             Spacer()
 
-            Button("Save") {
+            Button(Strings.Timer.save) {
                 guard !goalText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
                 onSave()
                 isPresented = false
@@ -410,7 +422,7 @@ struct GoalInputSheet: View {
     }
 
     private var questionText: some View {
-        Text("What's your goal?")
+        Text(Strings.Timer.whatsYourGoal)
             .font(Fonts.title3.weight(.medium))
             .multilineTextAlignment(.center)
             .padding(.top)
@@ -420,7 +432,7 @@ struct GoalInputSheet: View {
 #if os(iOS)
         AutoFocusTextField(
             text: $goalText,
-            placeholder: "Enter your goal...",
+            placeholder: Strings.Timer.enterYourGoal,
             onCommit: {
                 guard !goalText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
                 onSave()
@@ -428,10 +440,10 @@ struct GoalInputSheet: View {
                 goalText = ""
             }
         )
-        .frame(height: 44)
+        .frame(height: Constants.goalInputTextFieldHeight)
         .padding(.horizontal)
 #else
-        TextField("Enter your goal...", text: $goalText)
+        TextField(Strings.Timer.enterYourGoal, text: $goalText)
             .textFieldStyle(RoundedBorderTextFieldStyle())
             .padding(.horizontal)
             .onSubmit {

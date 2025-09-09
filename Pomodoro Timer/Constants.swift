@@ -82,4 +82,37 @@ enum Constants {
     
     // MARK: - Time Conversion
     static let secondsPerMinute: Double = 60
+    
+    // MARK: - Goal Input Sheet
+    static let goalInputSheetMinWidth: CGFloat = 400
+    static let goalInputSheetMinHeight: CGFloat = 200
+    static let goalInputSheetSpacing: CGFloat = 20
+    static let goalInputSheetDetentHeight: CGFloat = 200
+    static let goalInputTextFieldHeight: CGFloat = 44
+    
+    // MARK: - Control Buttons
+    #if os(iOS)
+    static let controlButtonSize: CGFloat = 50
+    static let mainControlButtonSize: CGFloat = 80
+    static let controlButtonSpacing: CGFloat = 20
+    #else
+    static let controlButtonSize: CGFloat = 40
+    static let mainControlButtonSize: CGFloat = 64
+    static let controlButtonSpacing: CGFloat = 16
+    #endif
+    static let controlButtonPaddingHorizontal: CGFloat = 20
+    static let controlButtonPaddingVertical: CGFloat = 12
+    static let controlButtonCornerRadius: CGFloat = 25
+    static let mainButtonAnimationDuration: Double = 0.2
+    static let mainButtonScaleRunning: CGFloat = 1.1
+    static let mainButtonScaleNormal: CGFloat = 1.0
+    
+    // MARK: - Timer View
+    static let timerViewSpacing: CGFloat = 20
+    static let timerViewPaddingHorizontal: CGFloat = 15
+    static let timerViewPaddingVertical: CGFloat = 10
+    static let timerCyclesSpacing: CGFloat = 6
+    static let timerCyclesMaxWidth: CGFloat = 200
+    static let timerCyclesPaddingTop: CGFloat = 10
+    static let goalPlaceholderSpacing: CGFloat = 4
 }

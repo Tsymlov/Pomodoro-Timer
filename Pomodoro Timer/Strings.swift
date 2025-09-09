@@ -59,6 +59,11 @@ enum Strings {
         static let sessionGoal = "Session Goal"
         static let cancel = "Cancel"
         static let save = "Save"
+        static let whatsYourGoal = "What's your goal?"
+        static let enterYourGoal = "Enter your goal..."
+        static let startFocus = "Start Focus"
+        static let startBreak = "Start Break"
+        static let stop = "Stop"
     }
     
     // MARK: - Icons
@@ -70,6 +75,7 @@ enum Strings {
         static let target = "target"
         static let playCircle = "play.circle"
         static let playFill = "play.fill"
+        static let pauseFill = "pause.fill"
         static let repeatCircle = "repeat.circle"
         static let speakerWave = "speaker.wave.2"
         static let gearshape = "gearshape.fill"
