@@ -259,7 +259,10 @@ struct DurationRow: View {
                 .foregroundColor(type.color)
                 .frame(width: Constants.settingsLabelWidth, alignment: .leading)
             
-            Slider(value: $value, in: type.range, step: 1)
+            Slider(value: Binding(
+                get: { value },
+                set: { newValue in value = round(newValue) }
+            ), in: type.range)
                 .accentColor(type.color)
             
             Text(String(format: Strings.Settings.minutesFormat, Int(value)))
@@ -284,7 +287,10 @@ struct SliderRow: View {
                 .foregroundColor(color)
                 .frame(width: Constants.settingsLabelWidth, alignment: .leading)
             
-            Slider(value: $value, in: range, step: step)
+            Slider(value: Binding(
+                get: { value },
+                set: { newValue in value = round(newValue / step) * step }
+            ), in: range)
                 .accentColor(color)
             
             Text(format(value))

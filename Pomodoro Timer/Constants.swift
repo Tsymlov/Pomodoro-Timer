@@ -56,7 +56,7 @@ enum Constants {
     
     // MARK: - Settings Window
     static let settingsWindowWidth: CGFloat = 450
-    static let settingsWindowHeight: CGFloat = 550
+    static let settingsWindowHeight: CGFloat = 680
     static let settingsSectionSpacing: CGFloat = 20
     static let settingsRowSpacing: CGFloat = 12
     static let settingsPadding: CGFloat = 15
