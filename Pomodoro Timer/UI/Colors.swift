@@ -11,7 +11,7 @@ enum Colors {
     // MARK: - Session Colors
     static let pomodoro = Color.accent
     static let shortBreak = Color.blue
-    static let longBreak = Color.purple
+    static let longBreak = Color.pink
     static let completed = Color.green
     
     // MARK: - Opacity Values
